@@ -23,7 +23,9 @@
 <!-- script
 ================================================== -->
 <script src="{% static 'js/modernizr.js' %}"></script>
-{% block extra_css %}{% endblock extra_css %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'login2.css' %}">
+{% endblock extra_css %}
 </head>
 <body>
 
@@ -74,11 +76,21 @@
   </div>
 </header>
 
+    <!-- Messages d'erreur ou de succès -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+
     {% block content %}
     {% endblock content %}
 
 
-      <footer id="footer">
+  <footer id="footer">
         <div class="container">
           <div class="footer-menu-list">
             <div class="row d-flex flex-wrap justify-content-between">
@@ -198,5 +210,20 @@
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
     <script src="{% static 'js/plugins.js' %}"></script>
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+      // Auto-fermeture des alertes après 3 secondes
+  document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.classList.add('fade-out');
+        setTimeout(() => {
+          alert.remove();
+        }, 500); // Temps de l'animation fade-out
+      }, 3000); // 3 secondes avant de commencer à disparaître
+    });
+  });
+    
+    </script>
 </body>
 </html>

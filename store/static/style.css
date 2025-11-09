@@ -1700,6 +1700,7 @@ blockquote cite {
   -webkit-transform: translateY(-40px);
   transform: translateY(-40px);
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   -webkit-transition-property: -webkit-transform;
   transition-property: transform;
   -webkit-transition-duration: 0.3s;

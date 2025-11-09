@@ -11,12 +11,19 @@
         </div>
         <div class="col-md-4 col-sm-12 user-items">
         <ul class="d-flex justify-content-end list-unstyled">
+            {% if user.is_authenticated %}
             <li>
-            <a href="{% url 'login' %}">
-                <i class="icon icon-user"></i>
+            <a href="{% url 'logout' %}">
+                logout
             </a>
             </li>
+            {% else %}
             <li>
+            <a href="{% url 'login' %}">
+                login
+            </a>
+            <li>
+            {% endif %}
             <a href="cart.html">
                 <i class="icon icon-shopping-cart"></i>
             </a>

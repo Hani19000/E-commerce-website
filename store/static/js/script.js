@@ -224,7 +224,6 @@
       innerWidth: 960,
       innerHeight: 585,
     });
-
   });
 
 })(jQuery);
