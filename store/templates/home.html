@@ -192,7 +192,15 @@
               <h3 class="product-title">
                 <a href="single-product.html">{{ product.name }}</a>
               </h3>
-              <div class="item-price text-primary">{{ product.price }}</div>
+              {% if product.is_sale %}
+                <div>
+                <span>Sale</span>
+                  <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                  <s class="text-muted ms-2">${{ product.price }}</s>
+                </div>
+              {% else %}
+                <span class="item-price text-primary">${{ product.price }}</span>
+              {% endif %}
             </div>
           </div>
           {% endfor %}
@@ -226,7 +234,15 @@
               <h3 class="product-title">
                 <a href="single-product.html">{{ product.name }}</a>
               </h3>
-              <div class="item-price text-primary">{{ product.price }}</div>
+              {% if product.is_sale %}
+                <div>
+                <span>Sale</span>
+                  <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                  <s class="text-muted ms-2">${{ product.price }}</s>
+                </div>
+              {% else %}
+                <span class="item-price text-primary">${{ product.price }}</span>
+              {% endif %}
             </div>
           </div>
           {% endfor %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category
+from .models import Product, Category, Tag
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User 
@@ -16,6 +16,12 @@ def home(request):
 
 def about(request):
     return render(request, 'about.html', {})
+
+def shop (request):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    tags= Tag.objects.all()
+    return render(request, 'shop.html', {'products': products, 'categories': categories, 'tags': tags})
 
 
 def login_user(request):
@@ -52,12 +58,11 @@ def register_user(request):
             password = form.cleaned_data['password1']
             #log in user
             user = authenticate(username=username, password=password)
-            user.save()
             login(request, user)
             messages.success(request, ('You have registered succefly !'))
             return redirect('home')
         else:
             messages.error(request, ('there was an error!'))
-            return redirect('register')
+            return render(request, 'register.html', {'form': form})
     else:
         return render (request, 'register.html', {'form':form})
