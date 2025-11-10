@@ -104,7 +104,7 @@
               <button class="qty-btn" onclick="incrementQty()">+</button>
             </div>
             
-            <button class="add-to-cart-btn" onclick="addToCart()">
+            <button class="add-to-cart-btn" type="button" value="{{ product.id }}" id='add-cart'>
               <i class="icon icon-cart"></i> Add to Cart
             </button>
             
@@ -261,4 +261,25 @@
   </div>
 </section>
 
+<script>
+  //check if button pressed
+$(document).on('click', '#add-cart', function(e) {
+  e.preventDefault();
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'cart_add' %}",
+    data: {
+      product_id: $('#add-cart').val(),
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      action: 'post'   // <-- très important, doit correspondre au test dans la vue
+    },
+    success: function(json) {
+      console.log(json);
+    },
+    error: function(xhr, errmsg, err) {
+    }
+  });
+});
+
+</script>
 {% endblock content %}

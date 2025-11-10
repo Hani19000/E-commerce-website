@@ -1,58 +1,162 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/cart.css' %}">
+{% endblock extra_css %}
 {% block content %}
 
-<section id="billboard" class="overflow-hidden">
-  <button class="button-prev">
-  <i class="icon icon-chevron-left"></i>
-  </button>
-  <button class="button-next">
-  <i class="icon icon-chevron-right"></i>
-  </button>
-  <div class="swiper main-swiper">
-  <div class="swiper-wrapper">
-  <div class="swiper-slide" style="background-image: url('{% static 'images/banner1.jpg' %}');background-repeat: no-repeat;background-size: cover;background-position: center;">
-    <div class="banner-content">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <h2 class="banner-title">shopping cart</h2>
-            <p>view your cart</p>
-            <div class="btn-wrap">
-              <a href="shop.html" class="btn btn-light btn-medium d-flex align-items-center" tabindex="0">Shop it now <i class="icon icon-arrow-io"></i>
-              </a>
-            </div>
-          </div>
+<!-- Banner Section -->
+<section class="site-banner jarallax min-height300 padding-large" style="background: url({% static 'images/hero-image.jpg' %}) no-repeat;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Shopping Cart</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home /</a>
+          </span>
+          <span class="item">Cart</span>
         </div>
       </div>
     </div>
   </div>
-  <div class="swiper-slide" style="background-image: url('{% static 'images/banner2.jpg' %}');background-repeat: no-repeat;background-size: cover;background-position: center;">
-    <div class="banner-content">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <h2 class="banner-title">Casual Collection</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eu feugiat amet, libero ipsum enim pharetra hac.</p>
-            <div class="btn-wrap">
-              <a href="shop.html" class="btn btn-light btn-light-arrow btn-medium d-flex align-items-center" tabindex="0">Shop it now <i class="icon icon-arrow-io"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-  </div>
-  </section>
+</section>
 
-<section id="featured-products" class="product-store padding-large">
+<!-- Cart Content -->
+<section class="shopify-cart padding-large">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        {% if cart_items %}
+        <div class="cart-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cart_items %}
+              <tr>
+                <td>
+                  <div class="cart-product d-flex align-items-center">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-product-image">
+                    <div class="product-info">
+                      <h5><a href="{% url 'product' item.product.id %}">{{ item.product.name }}</a></h5>
+                      <span class="product-category">{{ item.product.category.name }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {% if item.product.is_sale %}
+                    <span class="price">${{ item.product.sale_price }}</span>
+                  {% else %}
+                    <span class="price">${{ item.product.price }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="quantity-selector">
+                    <button class="qty-btn minus" data-product-id="{{ item.product.id }}">-</button>
+                    <input type="number" class="qty-input" value="{{ item.quantity }}" min="1" data-product-id="{{ item.product.id }}">
+                    <button class="qty-btn plus" data-product-id="{{ item.product.id }}">+</button>
+                  </div>
+                </td>
+                <td>
+                  {% if item.product.is_sale %}
+                    <span class="total-price">${{ item.product.sale_price|floatformat:2 }}</span>
+                  {% else %}
+                    <span class="total-price">${{ item.product.price|floatformat:2 }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <button class="btn-remove" data-product-id="{{ item.product.id }}">
+                    <i class="icon icon-close"></i>
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cart Actions -->
+        <div class="cart-actions d-flex justify-content-between align-items-center">
+          <a href="{% url 'shop' %}" class="btn btn-dark btn-medium">
+            <i class="icon icon-arrow-left"></i> Continue Shopping
+          </a>
+          <button class="btn btn-outline-dark btn-medium" id="clear-cart">
+            Clear Cart
+          </button>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="row mt-5">
+          <div class="col-md-6">
+            <!-- Coupon Code -->
+            <div class="coupon-code bg-light-grey padding-medium">
+              <h4>Have a Coupon Code?</h4>
+              <p>Enter your coupon code to get a discount</p>
+              <form class="d-flex">
+                <input type="text" class="form-control" placeholder="Coupon Code">
+                <button type="submit" class="btn btn-dark btn-medium ms-3">Apply</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <!-- Cart Total -->
+            <div class="cart-totals bg-light-grey padding-medium">
+              <h4>Cart Totals</h4>
+              <div class="totals-table">
+                <div class="d-flex justify-content-between mb-3">
+                  <span>Subtotal:</span>
+                  <span class="subtotal">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <span>Shipping:</span>
+                  <span>Free</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                  <strong>Total:</strong>
+                  <strong class="total text-primary">$0.00</strong>
+                </div>
+                <a href="#" class="btn btn-dark btn-full btn-medium">
+                  Proceed to Checkout <i class="icon icon-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% else %}
+        <!-- Empty Cart -->
+        <div class="empty-cart text-center padding-large">
+          <i class="icon icon-shopping-cart" style="font-size: 80px; color: #ccc;"></i>
+          <h2 class="mt-4">Your Cart is Empty</h2>
+          <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet</p>
+          <a href="{% url 'shop' %}" class="btn btn-dark btn-medium">
+            Start Shopping <i class="icon icon-arrow-io"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if cart_items %}
+<!-- You May Also Like Section -->
+<section id="featured-products" class="product-store padding-large bg-light-grey">
   <div class="container">
     <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
-      <h2 class="section-title">Featured Products</h2>            
+      <h2 class="section-title">You May Also Like</h2>            
       <div class="btn-wrap">
-        <a href="shop.html" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
+        <a href="{% url 'shop' %}" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
       </div>            
     </div>
     <div class="swiper product-swiper overflow-hidden">
@@ -61,7 +165,7 @@
         <div class="swiper-slide">
           <div class="product-item">
             <div class="image-holder">
-              <img src="{{ product.image.url }}" alt="Books" class="product-image">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
             </div>
             <div class="cart-concern">
               <div class="cart-button d-flex justify-content-between align-items-center">
@@ -82,7 +186,6 @@
               </h3>
               {% if product.is_sale %}
                 <div>
-                <span>Sale</span>
                   <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
                   <s class="text-muted ms-2">${{ product.price }}</s>
                 </div>
@@ -98,107 +201,48 @@
     </div>
   </div>
 </section>
+{% endif %}
 
-
-<section id="brand-collection" class="padding-medium bg-light-grey">
-        <div class="container">
-          <div class="d-flex flex-wrap justify-content-between">
-            <img src="{% static 'images/brand1.png' %}" alt="phone" class="brand-image">
-            <img src="{% static 'images/brand2.png' %}" alt="phone" class="brand-image">
-            <img src="{% static 'images/brand3.png' %}" alt="phone" class="brand-image">
-            <img src="{% static 'images/brand4.png' %}" alt="phone" class="brand-image">
-            <img src="{% static 'images/brand5.png' %}" alt="phone" class="brand-image">
-          </div>
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Free shipping</strong> Over $200
+          </h4>
         </div>
-      </section>
-
-      <section id="instagram" class="padding-large">
-        <div class="container">
-          <div class="section-header">
-            <h2 class="section-title">Follow our instagram</h2>
-          </div>
-          <p>Our official Instagram account <a href="#">@ultras</a> or <a href="#">#ultras_clothing</a>
-          </p>
-          <div class="row d-flex flex-wrap justify-content-between">
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image1.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image2.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image3.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image4.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image5.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-              <figure class="zoom-effect">
-                <img src="{% static 'images/insta-image6.jpg' %}" alt="instagram" class="insta-image">
-                <i class="icon icon-instagram"></i>
-              </figure>
-            </div>
-          </div>          
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Money back</strong> Return within 7 days
+          </h4>
         </div>
-      </section>
-
-      <section id="shipping-information">
-        <hr>
-        <div class="container">
-          <div class="row d-flex flex-wrap align-items-center justify-content-between">
-            <div class="col-md-3 col-sm-6">
-              <div class="icon-box">
-                <i class="icon icon-truck"></i>
-                <h4 class="block-title">
-                  <strong>Free shipping</strong> Over $200
-                </h4>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-              <div class="icon-box">
-                <i class="icon icon-return"></i>
-                <h4 class="block-title">
-                  <strong>Money back</strong> Return within 7 days
-                </h4>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-              <div class="icon-box">
-                <i class="icon icon-tags1"></i>
-                <h4 class="block-title">
-                  <strong>Buy 4 get 5th</strong> 50% off
-                </h4>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-              <div class="icon-box">
-                <i class="icon icon-help_outline"></i>
-                <h4 class="block-title">
-                  <strong>Any questions?</strong> experts are ready
-                </h4>
-              </div>
-            </div>
-          </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Buy 4 get 5th</strong> 50% off
+          </h4>
         </div>
-        <hr>
-      </section>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Any questions?</strong> experts are ready
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
 
 {% endblock content %}
