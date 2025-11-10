@@ -23,135 +23,60 @@
 </section>
 
 <!-- Cart Content -->
-<section class="shopify-cart padding-large">
+<section id="featured-products" class="product-store padding-large">
   <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        {% if cart_items %}
-        <div class="cart-table">
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Product</th>
-                <th scope="col">Price</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Total</th>
-                <th scope="col">Remove</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in cart_items %}
-              <tr>
-                <td>
-                  <div class="cart-product d-flex align-items-center">
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-product-image">
-                    <div class="product-info">
-                      <h5><a href="{% url 'product' item.product.id %}">{{ item.product.name }}</a></h5>
-                      <span class="product-category">{{ item.product.category.name }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {% if item.product.is_sale %}
-                    <span class="price">${{ item.product.sale_price }}</span>
-                  {% else %}
-                    <span class="price">${{ item.product.price }}</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <div class="quantity-selector">
-                    <button class="qty-btn minus" data-product-id="{{ item.product.id }}">-</button>
-                    <input type="number" class="qty-input" value="{{ item.quantity }}" min="1" data-product-id="{{ item.product.id }}">
-                    <button class="qty-btn plus" data-product-id="{{ item.product.id }}">+</button>
-                  </div>
-                </td>
-                <td>
-                  {% if item.product.is_sale %}
-                    <span class="total-price">${{ item.product.sale_price|floatformat:2 }}</span>
-                  {% else %}
-                    <span class="total-price">${{ item.product.price|floatformat:2 }}</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <button class="btn-remove" data-product-id="{{ item.product.id }}">
-                    <i class="icon icon-close"></i>
-                  </button>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+    <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
+      <h2 class="section-title">Featured Products</h2>            
+      <div class="btn-wrap">
+        <a href="{% url 'shop' %}" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
+      </div>            
+    </div>
+    <div class="swiper product-swiper overflow-hidden">
+      <div class="swiper-wrapper">
+        {% for product in cart_products %}
+        <div class="swiper-slide">
+          <div class="product-item">
+            <div class="image-holder">
+            <a href="{% url 'product' product.id %}" class="product-link">
+              <img src="{{ product.image.url }}" alt="Books" class="product-image">
+            </a>
+            </div>
 
-        <!-- Cart Actions -->
-        <div class="cart-actions d-flex justify-content-between align-items-center">
-          <a href="{% url 'shop' %}" class="btn btn-dark btn-medium">
-            <i class="icon icon-arrow-left"></i> Continue Shopping
-          </a>
-          <button class="btn btn-outline-dark btn-medium" id="clear-cart">
-            Clear Cart
-          </button>
-        </div>
-
-        <!-- Cart Summary -->
-        <div class="row mt-5">
-          <div class="col-md-6">
-            <!-- Coupon Code -->
-            <div class="coupon-code bg-light-grey padding-medium">
-              <h4>Have a Coupon Code?</h4>
-              <p>Enter your coupon code to get a discount</p>
-              <form class="d-flex">
-                <input type="text" class="form-control" placeholder="Coupon Code">
-                <button type="submit" class="btn btn-dark btn-medium ms-3">Apply</button>
-              </form>
+            <div class="product-detail">
+              <h3 class="product-title">
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+              </h3>
+              {% if product.is_sale %}
+                <div>
+                <span>Sale</span>
+                  <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                  <s class="text-muted ms-2">${{ product.price }}</s>
+                </div>
+              {% else %}
+                <span class="item-price text-primary">${{ product.price }}</span>
+              {% endif %}
             </div>
           </div>
-
-          <div class="col-md-6">
-            <!-- Cart Total -->
-            <div class="cart-totals bg-light-grey padding-medium">
-              <h4>Cart Totals</h4>
-              <div class="totals-table">
-                <div class="d-flex justify-content-between mb-3">
-                  <span>Subtotal:</span>
-                  <span class="subtotal">$0.00</span>
-                </div>
-                <div class="d-flex justify-content-between mb-3">
-                  <span>Shipping:</span>
-                  <span>Free</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between mb-4">
-                  <strong>Total:</strong>
-                  <strong class="total text-primary">$0.00</strong>
-                </div>
-                <a href="#" class="btn btn-dark btn-full btn-medium">
-                  Proceed to Checkout <i class="icon icon-arrow-right"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {% else %}
+      </div>
+            {% empty %}
         <!-- Empty Cart -->
-        <div class="empty-cart text-center padding-large">
+        <div class="empty-cart text-center padding-large" style="height: 30vh; width: 100vw; text-align: center;">
           <i class="icon icon-shopping-cart" style="font-size: 80px; color: #ccc;"></i>
           <h2 class="mt-4">Your Cart is Empty</h2>
           <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet</p>
           <a href="{% url 'shop' %}" class="btn btn-dark btn-medium">
-            Start Shopping <i class="icon icon-arrow-io"></i>
+            Start Shopping
           </a>
         </div>
-        {% endif %}
+        {% endfor %}
       </div>
     </div>
   </div>
 </section>
 
-{% if cart_items %}
+{% if cart_products %}
 <!-- You May Also Like Section -->
-<section id="featured-products" class="product-store padding-large bg-light-grey">
+<section id="featured-products" class="product-store padding-large" style="background: white;">
   <div class="container">
     <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
       <h2 class="section-title">You May Also Like</h2>            
