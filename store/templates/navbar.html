@@ -66,13 +66,19 @@
                 <li><a href="{% url 'about' %}" class="item-anchor" data-effect="About">About</a></li>
 
                 <li class="menu-item has-sub">
-                <a href="{% url 'shop' %}" class="item-anchor d-flex align-item-center" data-effect="Shop">Shop</a>
+                <a href="#" class="item-anchor d-flex align-item-center" data-effect="Shop">Shop<i class="icon icon-chevron-down"></i></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'shop' %}" class="item-anchor">All</a></li>
+                    <li><a href="coming-soon.html" class="item-anchor">vestes</a></li>
+                    <li><a href="coming-soon.html" class="item-anchor">t-shirt</a></li>
+                    <li><a href="coming-soon.html" class="item-anchor">jean</a></li>
+                </ul>
                 </li>
 
                 <li class="menu-item has-sub">
                 <a href="#" class="item-anchor d-flex align-item-center" data-effect="Pages">Pages<i class="icon icon-chevron-down"></i></a>
                 <ul class="submenu">
-                    <li><a href="coming-soon.html" class="item-anchor">Coming soon<span class="text-primary"> (PRO)</span></a></li>
+                    <li><a href="coming-soon.html" class="item-anchor">Coming soon</a></li>
                 </ul>
                 </li>
 

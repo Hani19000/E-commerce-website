@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product, Category, Tag
+from .models import Product, Category, Tag, Trademark
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User 
@@ -7,7 +7,22 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm
 from django import forms
 
+def category(request, foo):
+    #replace hypens with spaces
+    foo = foo.replace('-', ' ')
+    #grab the category from the url
+    try:
+        #look up the category
+        category = Category.objects.get(name=foo)
+        products = Product.ojects.filter(category=category)
+        return render(request, 'category.html', {'products': products, 'category':category})
+    except:
+        messages.error(request, ("that category dosen't exist !"))
+        return redirect('home')
 
+def product(request, pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'product.html', {'product': product})
 
 def home(request):
     products = Product.objects.all()
@@ -20,8 +35,9 @@ def about(request):
 def shop (request):
     products = Product.objects.all()
     categories = Category.objects.all()
-    tags= Tag.objects.all()
-    return render(request, 'shop.html', {'products': products, 'categories': categories, 'tags': tags})
+    tags = Tag.objects.all()
+    trademarks = Trademark.objects.all()
+    return render(request, 'shop.html', {'products': products, 'categories': categories, 'tags': tags, 'trademarks': trademarks })
 
 
 def login_user(request):

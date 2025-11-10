@@ -2,6 +2,21 @@
 {% load static %}
 {% block content %}
 
+<section class="site-banner jarallax min-height300 padding-large" style="background: url({% static 'images/hero-image.jpg' %}) no-repeat;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Shope Page</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home /</a>
+          </span>
+          <span class="item">shope</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
     <div class="shopify-grid padding-large">
       <div class="container">
@@ -42,7 +57,7 @@
             </div>
             <div class="product-detail">
               <h3 class="product-title">
-                <a href="single-product.html">{{ product.name }}</a>
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
               </h3>
               {% if product.is_sale %}
                 <div>
@@ -83,7 +98,7 @@
             </div>
             <div class="product-detail">
               <h3 class="product-title">
-                <a href="single-product.html">{{ product.name }}</a>
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
               </h3>
               {% if product.is_sale %}
                 <div>
@@ -100,6 +115,94 @@
         </div>
       </div>
       {% endfor %}
+      {% for tag in tags %}
+            <div id="tag-{{ tag.name }}" data-tab-content>
+              <div class="row d-flex flex-wrap">
+                {% for product in tag.product_set.all %}
+                <div class="product-item col-lg-3 col-md-6 col-sm-6">
+                  <div class="image-holder">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                  </div>
+                  <div class="cart-concern">
+                    <div class="cart-button d-flex justify-content-between align-items-center">
+                      <button type="button" class="btn-wrap cart-link d-flex align-items-center">
+                        add to cart <i class="icon icon-arrow-io"></i>
+                      </button>
+                      <button type="button" class="view-btn tooltip d-flex">
+                        <i class="icon icon-screen-full"></i>
+                        <span class="tooltip-text">Quick view</span>
+                      </button>
+                      <button type="button" class="wishlist-btn">
+                        <i class="icon icon-heart"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="product-detail">
+                    <h3 class="product-title">
+                      <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+                    </h3>
+                    {% if product.is_sale %}
+                    <div>
+                      <span>Sale</span>
+                      <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                      <s class="text-muted ms-2">${{ product.price }}</s>
+                    </div>
+                    {% else %}
+                    <span class="item-price text-primary">${{ product.price }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+            
+
+                  {% for trademark in trademarks %}
+            <div id="trademark-{{ trademark.name }}" data-tab-content>
+              <div class="row d-flex flex-wrap">
+                {% for product in trademark.product_set.all %}
+                <div class="product-item col-lg-3 col-md-6 col-sm-6">
+                  <div class="image-holder">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                  </div>
+                  <div class="cart-concern">
+                    <div class="cart-button d-flex justify-content-between align-items-center">
+                      <button type="button" class="btn-wrap cart-link d-flex align-items-center">
+                        add to cart <i class="icon icon-arrow-io"></i>
+                      </button>
+                      <button type="button" class="view-btn tooltip d-flex">
+                        <i class="icon icon-screen-full"></i>
+                        <span class="tooltip-text">Quick view</span>
+                      </button>
+                      <button type="button" class="wishlist-btn">
+                        <i class="icon icon-heart"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="product-detail">
+                    <h3 class="product-title">
+                      <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+                    </h3>
+                    {% if product.is_sale %}
+                    <div>
+                      <span>Sale</span>
+                      <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                      <s class="text-muted ms-2">${{ product.price }}</s>
+                    </div>
+                    {% else %}
+                    <span class="item-price text-primary">${{ product.price }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+      </section>
           </section>
           <aside class="col-md-3">
             <div class="sidebar">
@@ -116,7 +219,7 @@
                   <ul class="tabs list-unstyled">
                     <li data-tab-target="#all" class="tab active">All</li>
                     {% for tag in tags %}
-                    <li data-tab-target="#{{ tag.name }}" class="tab">
+                    <li data-tab-target="#tag-{{ tag.name }}" class="tab">
                       {{ tag.name }}
                     </li>
                     {% endfor %}
@@ -124,20 +227,14 @@
               </div>
               <div class="widgets widget-product-brands">
                 <h5 class="widget-title">Brands</h5>
-                <ul class="product-tags sidebar-list list-unstyled">
-                  <li class="tags-item">
-                    <a href="">Nike</a>
-                  </li>
-                  <li class="tags-item">
-                    <a href="">Adidas</a>
-                  </li>
-                  <li class="tags-item">
-                    <a href="">Puma</a>
-                  </li>
-                  <li class="tags-item">
-                    <a href="">Spike</a>
-                  </li>
-                </ul>
+                  <ul class="tabs list-unstyled">
+                    <li data-tab-target="#all" class="tab active">All</li>
+                    {% for trademark in trademarks %}
+                    <li data-tab-target="#trademark-{{ trademark.name }}" class="tab">
+                      {{ trademark.name }}
+                    </li>
+                    {% endfor %}
+                  </ul>
               </div>
               <div class="widgets widget-price-filter">
                 <h5 class="widget-title">Filter By Price</h5>
@@ -176,37 +273,37 @@
         <div class="row d-flex flex-wrap justify-content-between">
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image1.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image1.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image2.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image2.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image3.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image3.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image4.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image4.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image5.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image5.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
           <div class="col-lg-2 col-md-4 col-sm-6">
             <figure class="zoom-effect">
-              <img src="images/insta-image6.jpg" alt="instagram" class="insta-image">
+              <img src="{% static 'images/insta-image6.jpg' %}" alt="instagram" class="insta-image">
               <i class="icon icon-instagram"></i>
             </figure>
           </div>
