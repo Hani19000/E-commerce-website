@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<section id="billboard" class="overflow-hidden">
+  <button class="button-prev">
+  <i class="icon icon-chevron-left"></i>
+  </button>
+  <button class="button-next">
+  <i class="icon icon-chevron-right"></i>
+  </button>
+  <div class="swiper main-swiper">
+  <div class="swiper-wrapper">
+  <div class="swiper-slide" style="background-image: url('{% static 'images/banner1.jpg' %}');background-repeat: no-repeat;background-size: cover;background-position: center;">
+    <div class="banner-content">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h2 class="banner-title">shopping cart</h2>
+            <p>view your cart</p>
+            <div class="btn-wrap">
+              <a href="shop.html" class="btn btn-light btn-medium d-flex align-items-center" tabindex="0">Shop it now <i class="icon icon-arrow-io"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="swiper-slide" style="background-image: url('{% static 'images/banner2.jpg' %}');background-repeat: no-repeat;background-size: cover;background-position: center;">
+    <div class="banner-content">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h2 class="banner-title">Casual Collection</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eu feugiat amet, libero ipsum enim pharetra hac.</p>
+            <div class="btn-wrap">
+              <a href="shop.html" class="btn btn-light btn-light-arrow btn-medium d-flex align-items-center" tabindex="0">Shop it now <i class="icon icon-arrow-io"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </section>
+
+<section id="featured-products" class="product-store padding-large">
+  <div class="container">
+    <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
+      <h2 class="section-title">Featured Products</h2>            
+      <div class="btn-wrap">
+        <a href="shop.html" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
+      </div>            
+    </div>
+    <div class="swiper product-swiper overflow-hidden">
+      <div class="swiper-wrapper">
+        {% for product in products %}
+        <div class="swiper-slide">
+          <div class="product-item">
+            <div class="image-holder">
+              <img src="{{ product.image.url }}" alt="Books" class="product-image">
+            </div>
+            <div class="cart-concern">
+              <div class="cart-button d-flex justify-content-between align-items-center">
+                <button type="button" class="btn-wrap cart-link d-flex align-items-center">add to cart <i class="icon icon-arrow-io"></i>
+                </button>
+                <button type="button" class="view-btn tooltip d-flex">
+                  <i class="icon icon-screen-full"></i>
+                  <span class="tooltip-text">Quick view</span>
+                </button>
+                <button type="button" class="wishlist-btn">
+                  <i class="icon icon-heart"></i>
+                </button>
+              </div>
+            </div>
+            <div class="product-detail">
+              <h3 class="product-title">
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+              </h3>
+              {% if product.is_sale %}
+                <div>
+                <span>Sale</span>
+                  <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                  <s class="text-muted ms-2">${{ product.price }}</s>
+                </div>
+              {% else %}
+                <span class="item-price text-primary">${{ product.price }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="brand-collection" class="padding-medium bg-light-grey">
+        <div class="container">
+          <div class="d-flex flex-wrap justify-content-between">
+            <img src="{% static 'images/brand1.png' %}" alt="phone" class="brand-image">
+            <img src="{% static 'images/brand2.png' %}" alt="phone" class="brand-image">
+            <img src="{% static 'images/brand3.png' %}" alt="phone" class="brand-image">
+            <img src="{% static 'images/brand4.png' %}" alt="phone" class="brand-image">
+            <img src="{% static 'images/brand5.png' %}" alt="phone" class="brand-image">
+          </div>
+        </div>
+      </section>
+
+      <section id="instagram" class="padding-large">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">Follow our instagram</h2>
+          </div>
+          <p>Our official Instagram account <a href="#">@ultras</a> or <a href="#">#ultras_clothing</a>
+          </p>
+          <div class="row d-flex flex-wrap justify-content-between">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image1.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image2.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image3.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image4.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image5.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+              <figure class="zoom-effect">
+                <img src="{% static 'images/insta-image6.jpg' %}" alt="instagram" class="insta-image">
+                <i class="icon icon-instagram"></i>
+              </figure>
+            </div>
+          </div>          
+        </div>
+      </section>
+
+      <section id="shipping-information">
+        <hr>
+        <div class="container">
+          <div class="row d-flex flex-wrap align-items-center justify-content-between">
+            <div class="col-md-3 col-sm-6">
+              <div class="icon-box">
+                <i class="icon icon-truck"></i>
+                <h4 class="block-title">
+                  <strong>Free shipping</strong> Over $200
+                </h4>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="icon-box">
+                <i class="icon icon-return"></i>
+                <h4 class="block-title">
+                  <strong>Money back</strong> Return within 7 days
+                </h4>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="icon-box">
+                <i class="icon icon-tags1"></i>
+                <h4 class="block-title">
+                  <strong>Buy 4 get 5th</strong> 50% off
+                </h4>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <div class="icon-box">
+                <i class="icon icon-help_outline"></i>
+                <h4 class="block-title">
+                  <strong>Any questions?</strong> experts are ready
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+      </section>
+
+{% endblock content %}

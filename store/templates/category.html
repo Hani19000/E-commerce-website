@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/category.css' %}">
+{% endblock extra_css %}
+{% block content %}
+
+<!-- Category Banner -->
+<section class="site-banner jarallax min-height300 padding-large" style="background: url({% static 'images/hero-image.jpg' %}) no-repeat;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">{{ category }}</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home /</a>
+          </span>
+          <span class="item">{{ category }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category Description Section -->
+<section class="category-intro padding-large bg-light-grey">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h2 class="section-title">Discover Our {{ category }} Collection</h2>
+        <p class="lead">Explore our carefully curated selection of {{ category |lower }} products. Each item is chosen for its quality, style, and value to bring you the best shopping experience.</p>
+      </div>
+      <div class="col-md-4 text-right">
+        <div class="product-count">
+          <h3 class="text-primary">{{ products.count }}</h3>
+          <p>Products Available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filter Bar -->
+<section class="filter-bar bg-white padding-small">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="filter-options d-flex align-items-center">
+          <span class="filter-label">Sort By:</span>
+          <select class="form-control ml-3" style="width: auto; margin-left: 15px;">
+            <option>Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest</option>
+            <option>Best Selling</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6 text-right">
+        <div class="view-options">
+          <span class="filter-label">View:</span>
+          <button class="btn btn-sm btn-outline-dark active ml-2" style="margin-left: 10px;">
+            <i class="icon icon-th"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-dark ml-2" style="margin-left: 10px;">
+            <i class="icon icon-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products Grid -->
+<section class="category-products padding-large">
+  <div class="container">
+    <div class="row">
+          {% for product in products %}
+          <div class="product-item col-lg-3 col-md-6 col-sm-6">
+            <div class="image-holder">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+            </div>
+            <div class="cart-concern">
+              <div class="cart-button d-flex justify-content-between align-items-center">
+                <button type="button" class="btn-wrap cart-link d-flex align-items-center">
+                  add to cart <i class="icon icon-arrow-io"></i>
+                </button>
+                <button type="button" class="view-btn tooltip d-flex">
+                  <i class="icon icon-screen-full"></i>
+                  <span class="tooltip-text">Quick view</span>
+                </button>
+                <button type="button" class="wishlist-btn">
+                  <i class="icon icon-heart"></i>
+                </button>
+              </div>
+            </div>
+            <div class="product-detail">
+              <h3 class="product-title">
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+              </h3>
+              {% if product.is_sale %}
+                <div>
+                <span>Sale</span>
+                  <span class="item-price text-primary">${{ product.sale_price }}</span> &nbsp;
+                  <s class="text-muted ms-2">${{ product.price }}</s>
+                </div>
+              {% else %}
+                <span class="item-price text-primary">${{ product.price }}</span>
+              {% endif %}
+            </div>
+            <button class="btn btn-dark btn-full add-to-cart-btn">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-md-12 text-center padding-large">
+        <h3>No products found in this category</h3>
+        <p>Check back soon for new items!</p>
+        <a href="{% url 'shop' %}" class="btn btn-primary btn-medium">Browse All Products</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products %}
+    <nav class="navigation paging-navigation text-center padding-medium" role="navigation">
+      <div class="pagination loop-pagination d-flex justify-content-center">
+        <a href="#" class="pagination-arrow d-flex align-items-center">
+          <i class="icon icon-arrow-left"></i>
+        </a>
+        <span aria-current="page" class="page-numbers current">1</span>
+        <a class="page-numbers" href="#">2</a>
+        <a class="page-numbers" href="#">3</a>
+        <a href="#" class="pagination-arrow d-flex align-items-center">
+          <i class="icon icon-arrow-right"></i>
+        </a>
+      </div>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- Newsletter Section -->
+<section id="subscribe" class="padding-large">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <div class="block-text">
+          <h2 class="section-title">Get exclusive offers & updates</h2>
+          <p>Subscribe to our newsletter and be the first to know about new arrivals, sales, and special promotions.</p>
+        </div>
+        <div class="subscribe-content">
+          <form id="form" class="d-flex justify-content-center">
+            <input type="text" name="email" placeholder="Enter your email address" style="flex: 1; max-width: 400px;">
+            <button class="btn btn-dark">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Free shipping</strong> Over $200
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Money back</strong> Return within 7 days
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Buy 4 get 5th</strong> 50% off
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Any questions?</strong> experts are ready
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
+
+{% endblock content %}

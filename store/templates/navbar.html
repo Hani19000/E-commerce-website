@@ -24,7 +24,7 @@
             </a>
             {% endif %}
             <li>
-            <a href="cart.html">
+            <a href="{% url 'cart_summary' %}">
                 <i class="icon icon-shopping-cart"></i>
             </a>
             </li>
@@ -66,12 +66,12 @@
                 <li><a href="{% url 'about' %}" class="item-anchor" data-effect="About">About</a></li>
 
                 <li class="menu-item has-sub">
-                <a href="#" class="item-anchor d-flex align-item-center" data-effect="Shop">Shop<i class="icon icon-chevron-down"></i></a>
+                <a href="#" class="item-anchor d-flex align-item-center" data-effect="Shop">categories<i class="icon icon-chevron-down"></i></a>
                 <ul class="submenu">
-                    <li><a href="{% url 'shop' %}" class="item-anchor">All</a></li>
-                    <li><a href="coming-soon.html" class="item-anchor">vestes</a></li>
-                    <li><a href="coming-soon.html" class="item-anchor">t-shirt</a></li>
-                    <li><a href="coming-soon.html" class="item-anchor">jean</a></li>
+                    <li><a href="{% url 'shop' %}" class="item-anchor">All product</a></li>
+                    <li><a href="{% url 'category' 'vestes' %}" class="item-anchor">vestes</a></li>
+                    <li><a href="{% url 'category' 't-shirts' %}" class="item-anchor">T-shirts</a></li>
+                    <li><a href="{% url 'category' 'jeans' %}" class="item-anchor">jean</a></li>
                 </ul>
                 </li>
 
