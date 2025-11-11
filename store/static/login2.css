@@ -618,3 +618,273 @@
       flex-direction: column;
     }
   }
+
+
+
+  /*update profile page*/
+  .profile-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.profile-icon i {
+  font-size: 36px;
+  color: #ffffff;
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.button-group .login-button {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cancel-button {
+  flex: 1;
+  padding: 16px;
+  background: #ffffff;
+  color: #7f8c8d;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cancel-button:hover {
+  background: #f8f9fa;
+  border-color: #95a5a6;
+  color: #2c3e50;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Account Actions */
+.account-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.action-link:hover {
+  background: #ffffff;
+  border-color: #3498db;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.action-link i {
+  font-size: 24px;
+  color: #7f8c8d;
+  transition: color 0.3s ease;
+}
+
+.action-link.change-password:hover i {
+  color: #3498db;
+}
+
+.action-link.logout:hover i {
+  color: #e74c3c;
+}
+
+.action-link div {
+  flex: 1;
+}
+
+.action-link strong {
+  display: block;
+  font-size: 15px;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.action-link small {
+  display: block;
+  font-size: 13px;
+  color: #95a5a6;
+}
+
+/* Account Info */
+.account-info {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.account-info p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #2c3e50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-info p:last-child {
+  margin-bottom: 0;
+}
+
+.account-info strong {
+  color: #34495e;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-badge.inactive {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Password Field Note */
+.password-note {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.password-note i {
+  color: #856404;
+  margin-right: 8px;
+}
+
+.password-note p {
+  margin: 0;
+  font-size: 14px;
+  color: #856404;
+  line-height: 1.5;
+}
+
+/* Success Message Animation */
+.success-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideDown 0.5s ease;
+}
+
+.success-banner i {
+  font-size: 24px;
+}
+
+.success-banner p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Responsive Design for Update Page */
+@media (max-width: 768px) {
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group .login-button,
+  .cancel-button {
+    flex: 1;
+  }
+
+  .account-info p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .profile-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .profile-icon i {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-link {
+    padding: 14px;
+  }
+
+  .action-link i {
+    font-size: 20px;
+  }
+
+  .action-link strong {
+    font-size: 14px;
+  }
+
+  .action-link small {
+    font-size: 12px;
+  }
+}
+
+/* Hide password field in UpdateUserForm */
+.login-form input[type="password"][name*="password"] {
+  display: none;
+}
+
+.login-form label[for*="password"] {
+  display: none;
+}
+
+/* Django UserChangeForm password widget fix */
+.login-form .form-group:has(input[readonly]) {
+  display: none;
+}

@@ -1,6 +1,11 @@
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django import forms
+
+class ChangePasswordForm(SetPasswordForm):
+	class Meta:
+		model = User
+		field = ['new_password1', 'new_password2']
 
 class UpdateUserForm(UserChangeForm):
 	email = forms.EmailField(label="Email Address", widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'jozetzthn.doe@example.com', 'id':'email'}))
@@ -12,7 +17,7 @@ class UpdateUserForm(UserChangeForm):
 		fields = ('username', 'first_name', 'last_name', 'email')
 
 	def __init__(self, *args, **kwargs):
-		super(SignUpForm, self).__init__(*args, **kwargs)
+		super(UpdateUserForm, self).__init__(*args, **kwargs)
 
 		self.fields['username'].widget.attrs['class'] = 'form-control'
 		self.fields['username'].widget.attrs['placeholder'] = 'johndoe'
