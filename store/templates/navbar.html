@@ -13,6 +13,9 @@
         <ul class="d-flex justify-content-end list-unstyled">
             {% if user.is_authenticated %}
             <li>
+            <a href="{% url 'update_user' %}">
+                Profile
+            </a>
             <a href="{% url 'logout' %}">
                 logout
             </a>

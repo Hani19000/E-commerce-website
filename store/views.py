@@ -4,8 +4,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User 
 from django.contrib.auth.forms import UserCreationForm 
-from .forms import SignUpForm
+from .forms import SignUpForm, UpdateUserForm
 from django import forms
+
+def update_user(request):
+    if request.user.is_authenticated:
+        curent_user =   User.objects.get(id=request.user.id)
+        user_form
+
+
+    return render(request, "update_user.html", {})
+
 
 def category_summary(request):
     categories = Category.objects.all()

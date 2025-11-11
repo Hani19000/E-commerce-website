@@ -1,6 +1,25 @@
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
+
+class UpdateUserForm(UserChangeForm):
+	email = forms.EmailField(label="Email Address", widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'jozetzthn.doe@example.com', 'id':'email'}))
+	first_name = forms.CharField(label="First Name", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'John', 'id':'first_name'}))
+	last_name = forms.CharField(label="Last Name", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Doe', 'id':'last_name'}))
+
+	class Meta:
+		model = User
+		fields = ('username', 'first_name', 'last_name', 'email')
+
+	def __init__(self, *args, **kwargs):
+		super(SignUpForm, self).__init__(*args, **kwargs)
+
+		self.fields['username'].widget.attrs['class'] = 'form-control'
+		self.fields['username'].widget.attrs['placeholder'] = 'johndoe'
+		self.fields['username'].widget.attrs['id'] = 'username'
+		self.fields['username'].label = 'Username'
+		self.fields['username'].help_text = '<small>Choose a unique username (letters, numbers, and underscores only)</small>'
+
 
 
 class SignUpForm(UserCreationForm):
