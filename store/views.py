@@ -7,6 +7,12 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm
 from django import forms
 
+def category_summary(request):
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    trademarks = Trademark.objects.all()
+    return render(request, "category_summary.html", {'categories': categories, 'products': products, 'trademarks': trademarks})
+
 def category(request, foo):
     #replace hypens with spaces
     foo = foo.replace('-', ' ')

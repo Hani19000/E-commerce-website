@@ -64,28 +64,21 @@
                 <a href="{% url 'home' %}" class="item-anchor active d-flex align-item-center" data-effect="Home">Home</a>
                 </li>
 
-                <li><a href="{% url 'about' %}" class="item-anchor" data-effect="About">About</a></li>
+                <li class="menu-item has-sub">
+                <a href="{% url 'shop' %}" class="item-anchor d-flex align-item-center" data-effect="shop">shop</a>
+                </li>
 
                 <li class="menu-item has-sub">
                 <a href="#" class="item-anchor d-flex align-item-center" data-effect="Shop">categories<i class="icon icon-chevron-down"></i></a>
                 <ul class="submenu">
-                    <li><a href="{% url 'shop' %}" class="item-anchor">All product</a></li>
+                    <li><a href="{% url 'category_summary' %}" class="item-anchor">All product</a></li>
                     <li><a href="{% url 'category' 'vestes' %}" class="item-anchor">vestes</a></li>
                     <li><a href="{% url 'category' 't-shirts' %}" class="item-anchor">T-shirts</a></li>
                     <li><a href="{% url 'category' 'jeans' %}" class="item-anchor">jean</a></li>
                 </ul>
                 </li>
 
-                <li class="menu-item has-sub">
-                <a href="#" class="item-anchor d-flex align-item-center" data-effect="Pages">Pages<i class="icon icon-chevron-down"></i></a>
-                <ul class="submenu">
-                    <li><a href="coming-soon.html" class="item-anchor">Coming soon</a></li>
-                </ul>
-                </li>
-
-                <li class="menu-item has-sub">
-                <a href="blog.html" class="item-anchor d-flex align-item-center" data-effect="Blog">Blog</a>
-                </li>
+                <li><a href="{% url 'about' %}" class="item-anchor" data-effect="About">About</a></li>
 
                 <li><a href="contact.html" class="item-anchor" data-effect="Contact">Contact</a></li>
 

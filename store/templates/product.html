@@ -10,13 +10,8 @@
 <!-- Breadcrumb -->
 <nav class="breadcrumb-nav">
   <div class="container">
-    <ul class="breadcrumb">
-      <li><a href="{% url 'home' %}">Home</a></li>
-      <li>/</li>
-      <li><a href="#">{{ product.category.name }}</a></li>
-      <li>/</li>
-      <li class="active">{{ product.name }}</li>
-    </ul>
+<a href="{% url 'home' %}">Home</a>
+
   </div>
 </nav>
 
@@ -98,12 +93,31 @@
           </div>
           
           <div class="product-actions">
-            <div class="quantity-selector">
-              <button class="qty-btn" onclick="decrementQty()">-</button>
-              <input type="number" class="qty-input" value="1" min="1" id="quantity">
-              <button class="qty-btn" onclick="incrementQty()">+</button>
+              <select class="form-select" id="qty-cart">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              
+              <!--autre facon de le faire
+          <br><br/>
+          <div class = "row justify-content-center">
+            <div class="col-md-2">quantity :
+            <div class="col-md-2">
+              <select class="form-select form-selet-sm">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
             </div>
-            
+            </div>
+          </div>
+          <br><br/> -->
+
             <button class="add-to-cart-btn" type="button" value="{{ product.id }}" id="add-cart">
               Add to Cart
             </button>
@@ -270,6 +284,7 @@ $(document).on('click', '#add-cart', function(e){
     url: '{% url 'cart_add' %}',
     data: {
       product_id: $('#add-cart').val(),
+      product_qty: $('#qty-cart option:selected').text(),
       csrfmiddlewaretoken: '{{ csrf_token }}',
       action: 'post'   // <-- très important, doit correspondre au test dans la vue
     },
@@ -277,6 +292,7 @@ $(document).on('click', '#add-cart', function(e){
       //console.log(json)
       document.getElementById("cart_quantity").
         textContent = json.qty
+      location.reload();
     },
     error: function(xhr, errmsg, err) {
     }

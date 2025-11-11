@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/cart.css' %}">
-{% endblock extra_css %}
+
 {% block content %}
 
 <!-- Banner Section -->
@@ -29,6 +27,7 @@
       <h2 class="section-title">Featured Products</h2>            
       <div class="btn-wrap">
         <a href="{% url 'shop' %}" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
+        <strong>Total :${{ totals }}</strong>
       </div>            
     </div>
     <div class="swiper product-swiper overflow-hidden">
@@ -46,6 +45,27 @@
               <h3 class="product-title">
                 <a href="{% url 'product' product.id %}">{{ product.name }}</a>
               </h3>
+            <div class="product-actions">
+              <select class="form-select" id="select{{ product.id }}">
+              {% for key, value in quantities.items %}
+                {% if key == product.id|slugify %}
+                  <option selected > {{ value }} </option>
+                {% endif %}
+              {% endfor %}
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+            <button class="add-to-cart-btn update-cart" data-index="{{ product.id }}" type="button">
+              Update
+            </button>
+            <button class="add-to-cart-btn delete-product" data-index="{{ product.id }}" type="button">
+              Delete
+            </button>
+            <br><br/>
               {% if product.is_sale %}
                 <div>
                 <span>Sale</span>
@@ -64,7 +84,7 @@
           <i class="icon icon-shopping-cart" style="font-size: 80px; color: #ccc;"></i>
           <h2 class="mt-4">Your Cart is Empty</h2>
           <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet</p>
-          <a href="{% url 'shop' %}" class="btn btn-dark btn-medium">
+          <a href="{% url 'shop' %}" class="btn btn-dark btn-larg">
             Start Shopping
           </a>
         </div>
@@ -73,7 +93,6 @@
     </div>
   </div>
 </section>
-
 {% if cart_products %}
 <!-- You May Also Like Section -->
 <section id="featured-products" class="product-store padding-large" style="background: white;">
@@ -169,5 +188,60 @@
   </div>
   <hr>
 </section>
+
+<script>
+//code for update cart
+  //check if button pressed
+$(document).on('click', '.update-cart', function(e){
+  e.preventDefault();
+  //grab the product id
+  var productid = $(this).data('index');
+  $.ajax({
+    type: 'POST',
+    url: '{% url 'cart_update' %}',
+    data: {
+      product_id: $(this).data('index'),
+      product_qty: $('#select' + productid + ' option:selected').text(),
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      action: 'post'   // <-- très important, doit correspondre au test dans la vue
+    },
+    success: function(json){
+      //console.log(json)
+      //document.getElementById("cart_quantity").textContent = json.qty
+        location.reload();
+    },
+    error: function(xhr, errmsg, err) {
+    }
+
+  });
+
+})
+
+
+//code for delet product fromc art
+$(document).on('click', '.delete-product', function(e){
+  e.preventDefault();
+  //grab the product id
+  //var productid = $(this).data('index');
+  $.ajax({
+    type: 'POST',
+    url: '{% url 'cart_delete' %}',
+    data: {
+      product_id: $(this).data('index'),
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      action: 'post'   // <-- très important, doit correspondre au test dans la vue
+    },
+    success: function(json){
+      //console.log(json)
+      //document.getElementById("cart_quantity").textContent = json.qty
+        location.reload();
+    },
+    error: function(xhr, errmsg, err) {
+    }
+
+  });
+
+})
+</script>
 
 {% endblock content %}
