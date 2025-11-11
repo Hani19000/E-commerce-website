@@ -13,13 +13,11 @@
         <ul class="d-flex justify-content-end list-unstyled">
             {% if user.is_authenticated %}
             <li>
-            <a href="{% url 'update_user' %}">
-                Profile
-            </a>
             <a href="{% url 'logout' %}">
                 logout
             </a>
             </li>
+
             {% else %}
             <li>
             <a href="{% url 'login' %}">
@@ -72,12 +70,20 @@
                 </li>
 
                 <li class="menu-item has-sub">
-                <a href="#" class="item-anchor d-flex align-item-center" data-effect="Shop">categories<i class="icon icon-chevron-down"></i></a>
+                <a class="item-anchor d-flex align-item-center" data-effect="Shop">categories<i class="icon icon-chevron-down"></i></a>
                 <ul class="submenu">
                     <li><a href="{% url 'category_summary' %}" class="item-anchor">All product</a></li>
                     <li><a href="{% url 'category' 'vestes' %}" class="item-anchor">vestes</a></li>
                     <li><a href="{% url 'category' 't-shirts' %}" class="item-anchor">T-shirts</a></li>
                     <li><a href="{% url 'category' 'jeans' %}" class="item-anchor">jean</a></li>
+                </ul>
+                </li>
+
+                <li class="menu-item has-sub">
+                <a class="item-anchor d-flex align-item-center" data-effect="Shop">Profile<i class="icon icon-chevron-down"></i></a>
+                <ul class="submenu">
+                    <li><a href="{% url 'update_info' %}" class="item-anchor">User Profile</a></li>
+                    <li><a href="{% url 'update_user' %}" class="item-anchor">User info</a></li>
                 </ul>
                 </li>
 

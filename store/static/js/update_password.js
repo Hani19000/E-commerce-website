@@ -1,6 +1,6 @@
 // Indicateur de force du mot de passe
-    if (password) {
-      password.addEventListener('input', function() {
+    if (id_new_password1) {
+      id_new_password1.addEventListener('input', function() {
         const value = this.value;
         let strength = 0;
 
@@ -19,4 +19,3 @@
         }
       });
     }
-

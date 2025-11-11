@@ -33,7 +33,7 @@
 
       <!-- First Name & Last Name Row -->
       <div class="form-row">
-        <div class="form-group form-group-half">
+        <div class="form-group">
           <label for="{{ user_form.first_name.id_for_label }}">{{ user_form.first_name.label }}</label>
           {{ user_form.first_name }}
           {% if user_form.first_name.errors %}
@@ -45,7 +45,7 @@
           {% endif %}
         </div>
 
-        <div class="form-group form-group-half">
+        <div class="form-group">
           <label for="{{ user_form.last_name.id_for_label }}">{{ user_form.last_name.label }}</label>
           {{ user_form.last_name }}
           {% if user_form.last_name.errors %}
@@ -85,6 +85,10 @@
         <button type="submit" class="login-button">
           <i class="icon icon-check"></i> Update Profile
         </button>
+        <a href="{% url 'home' %}" class="cancel-button">
+          <i class="icon icon-close"></i> Cancel
+        </a>
+      </div>
 
       <div class="divider">
         <span>Account Actions</span>
