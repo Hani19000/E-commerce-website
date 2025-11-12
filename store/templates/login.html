@@ -1,65 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'login2.css' %}">
+{% endblock extra_css %}
 {% block content %}
+<section class="register-container">
+  <div class="register-wrapper">
+    <div class="register-header">
+      <h2>Sign Up</h2>
+      <p>Create your account to start shopping!</p>
+    </div>
 
-<section class="login-container">
-  <div class="login-wrapper">
-    <div class="login-header">
-      <h2>Sign In</h2>
-      <p>Welcome back! Please login to your account.</p>
-
-    <form method="POST" action="{% url 'login' %}" class="update-user-form">
+    <form method="POST" action="{% url 'register' %}" class="register-form">
       {% csrf_token %}
-
+    <!-- Email -->
       <div class="form-group">
-        <label for="username"> Email</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          placeholder="Enter your username or email"
-          required
-        >
+        <label for="email">{{ form.email.label }} <span class="required">*</span></label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <span class="error-message">{{ form.email.errors.0 }}</span>
+        {% endif %}
       </div>
 
+      <!-- Password -->
       <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Enter your password"
-          required
-        >
-      </div>
-
-      <div class="form-options">
-        <div class="remember-me">
-          <input type="checkbox" id="remember" name="remember">
-          <label for="remember">Remember me</label>
+        <label for="password">{{ form.password1.label }} <span class="required">*</span></label>
+        {{ form.password1 }}
+        {% if form.password1.help_text %}
+          <small>{{ form.password1.help_text|safe }}</small>
+        {% endif %}
+        <div class="password-strength">
+          <div class="password-strength-bar" id="strengthBar"></div>
         </div>
-        <a href="#" class="forgot-password">Forgot Password?</a>
+        {% if form.password1.errors %}
+          <span class="error-message">{{ form.password1.errors.0 }}</span>
+        {% endif %}
       </div>
 
-      <button type="submit" class="login-button">Login</button>
+      <!-- Affichage des erreurs non-field (erreurs générales) -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
 
-      <div class="divider">
-        <span>Or continue with</span>
-      </div>
-
-      <div class="social-login">
-        <button type="button" class="social-button facebook">
-          <i class="icon icon-facebook"></i>
-        </button>
-        <button type="button" class="social-button google">
-          <i class="fa fa-google"></i>
-        </button>
-      </div>
-
-      <div class="signup-link">
-        Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
-      </div>
-    </form>
-  </div>
-</section>
+      <button type="submit" class="register-button">login</button>
+<script src="{% static 'js/register.js' %}"></script>
 {% endblock content %}
