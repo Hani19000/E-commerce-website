@@ -1,12 +1,7 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django import forms
 from .models import Profile
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Checkbox
-
-
-User = get_user_model()  
 
 class UserInfoForm(forms.ModelForm):
 	phone = forms.CharField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'phone number'}), required=False)
@@ -45,13 +40,6 @@ class UpdateUserForm(UserChangeForm):
 		self.fields['username'].label = 'Username'
 		self.fields['username'].help_text = '<small>Choose a unique username (letters, numbers, and underscores only)</small>'
 
-
-
-class SignInForm(AuthenticationForm):
-	def __init__(self, *args, **kwargs):
-		super(SignInForm, self).__init__(*args, **kwargs)
-	username = forms.CharField(label="Username or Email", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Username or Email'}))
-	password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Password'}))
 
 
 class SignUpForm(UserCreationForm):

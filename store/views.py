@@ -3,7 +3,7 @@ from .models import Product, Category, Tag, Trademark, Profile
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm 
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, SignInForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django import forms
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -109,9 +109,9 @@ def shop (request):
 
 def login_user(request):
     if request.method == 'POST':
-        form = SignInForm(request=request, data=request.POST)
-        if form.is_valid():
-            user = authenticate(request, email=form, password=form)
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
             first_login = user.last_login is None
@@ -124,11 +124,8 @@ def login_user(request):
         else:
             messages.error(request, ('there was an error, try again !'))
             return redirect('login')
-    
     else:
-        form = SignInForm()
-    
-    return render(request, 'login.html')
+        return render(request, 'login.html')
 
 
 def logout_user(request):
