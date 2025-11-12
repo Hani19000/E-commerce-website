@@ -12,7 +12,7 @@
       <p>Update your account information</p>
     </div>
 
-    <form method="POST" action="{% url 'update_user' %}" class="login-form">
+    <form method="POST" action="{% url 'update_user' %}"  class="login-form update-user-form">
       {% csrf_token %}
 
       <!-- Username Field -->

@@ -3,7 +3,7 @@ from .models import Product, Category, Tag, Trademark, Profile
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm 
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, SignInForm
 from django import forms
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -108,24 +108,34 @@ def shop (request):
 
 
 def login_user(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            first_login = user.last_login is None
-            login(request, user)
-            messages.success(request, ('Welcom you have been logged in !'))
-            if first_login:
-                return redirect('update_info')
-            else:
-                return redirect('home')
+        form = SignInForm(request, data=request.POST)
+        if form.is_valid():
+            user = authenticate(
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password"]
+            )
+            
+            if user is not None:
+                first_login = user.last_login is None
+                login(request, user)
+                messages.success(request, ('Welcom you have been logged in !'))
+                if first_login:
+                    return redirect('update_info')
+                else:
+                    return redirect('home')
         else:
-            messages.error(request, ('there was an error, try again !'))
-            return redirect('login')
+            for key, error in list(form.errors.items()):
+                if key == 'captcha' and error[0] == 'This field is required.':
+                    messages.error(request, 'you must pass the recaptcha test !')
+                    continue
+                messages.error(request, error)
     else:
-        return render(request, 'login.html')
+        form = SignInForm()
+    
+    return render(request, 'login.html', {'form': form})
 
 
 def logout_user(request):

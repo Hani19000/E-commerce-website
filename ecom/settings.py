@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store',
     'cart',
+    'captcha',
+
 ]
 
 MIDDLEWARE = [
@@ -127,6 +129,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'store', 'static')]
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+RECAPTCHA_PUBLIC_KEY = '6LcEngosAAAAAKGEuKQnlNbn2ZQNsHultxJw7sD1'
+RECAPTCHA_PRIVATE_KEY = '6LcEngosAAAAAEWdS3q3YQEeLMAn1UbZXEym9lTs'
 
 #Emailing settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
