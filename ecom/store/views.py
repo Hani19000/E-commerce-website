@@ -11,10 +11,30 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
-from django.db.models.query_utils import Q
+from django.db.models import Q
+import json
+from cart.cart import Cart
 # User = get_user_model()
 
 
+
+
+def search(request):
+    #determine if they filled out the form
+    if request.method == "POST":
+        searched = request.POST['searched']
+        #Query the product DB model
+        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+        # searched = Trademark.objects.filter(name__icontains=searched)
+        # searched = Tag.objects.filter(name__icontains=searched)
+        # searched = Category.objects.filter(name__icontains=searched)
+        if not searched :
+            messages.error(request, "no product found")
+            return render (request=request, template_name='search.html', context={})
+        else:
+            return render (request=request, template_name='search.html', context={'searched': searched})
+    else:
+        return render (request=request, template_name='search.html', context={})
 
 def update_info(request):
     if request.user.is_authenticated:
@@ -175,8 +195,22 @@ def login_user(request):
                 username=form.cleaned_data["username"],
                 password=form.cleaned_data["password"]
             )
-            
+            login(request, user)
             if user is not None:
+                #avoir la session de carte meme quand je me déconnecte
+                current_user = Profile.objects.get(user__id=request.user.id)
+                #get their saved cart from DB
+                saved_cart = current_user.old_cart
+                #convert db str to python dictionary {"3",2, "4":5} to dictionary
+                if saved_cart :
+                    #convert dictionary using JSON
+                    converted_cart = json.loads(saved_cart)
+                    # add the loaded cart dictionary to our session
+                    # get the cart
+                    cart= Cart(request)
+                    #loop thru the cart and add thetems from the db
+                    for key, value in converted_cart.items():
+                        cart.db_add(product=key, quantity=value)
                 first_login = user.last_login is None
                 login(request, user)
                 messages.success(request, ('Welcom you have been logged in !'))

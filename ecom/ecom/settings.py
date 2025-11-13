@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,8 +131,8 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-RECAPTCHA_PUBLIC_KEY = '6LcEngosAAAAAKGEuKQnlNbn2ZQNsHultxJw7sD1'
-RECAPTCHA_PRIVATE_KEY = '6LcEngosAAAAAEWdS3q3YQEeLMAn1UbZXEym9lTs'
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY')
 
 #Emailing settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

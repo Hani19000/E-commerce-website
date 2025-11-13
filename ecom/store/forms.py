@@ -57,7 +57,7 @@ class SignInForm(AuthenticationForm):
 	def __init__(self, *args, **kwargs):
 		super(SignInForm, self).__init__(*args, **kwargs)
 	username  = forms.CharField(
-		label="Username or Email",
+		label=" Email",
 		widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter your email', 'id':'username'}),
 		required=True
 	)
