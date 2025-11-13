@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/category_summary.css' %}">
+{% endblock extra_css %}
+{% block content %}
+
+<!-- Hero Banner -->
+<section class="category-summary-banner">
+  <div class="container">
+    <div class="text-center">
+      <span class="category-badge">🎯 Explore Collections</span>
+      <h1>Shop by Category</h1>
+      <p>Discover our wide range of premium products across all categories. Find exactly what you're looking for in our carefully curated collections.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-content">
+  <div class="container">
+    
+    <!-- Section Header -->
+    <div class="section-header-center">
+      <h2>All Categories</h2>
+      <p>Browse through our carefully curated categories to find exactly what you're looking for</p>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="category-grid">
+      {% for category in categories %}
+      <div class="category-card-item">
+        <a href="{% url 'category' category %}" class="category-card-link">
+          <div class="category-card-header">
+            <div class="category-icon">
+              {{ category.name|slice:":1" }}
+            </div>
+            <span class="product-count-badge">{{ category.product_set.count }} Products</span>
+          </div>
+          <div class="category-card-content">
+            <h3 class="category-card-title">{{ category }}</h3>
+            <p class="category-card-description">
+              Explore our exclusive collection of {{ category|lower }} products with premium quality and style.
+            </p>
+            <div class="category-card-footer">
+              <span class="shop-category-btn">
+                Shop Now
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-state-icon">🏷️</div>
+        <h3>No categories available</h3>
+        <p>Check back soon for new collections!</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="categories-stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">{{ categories.count }}</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ products.count }}</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ trademarks.count }}</div>
+        <div class="stat-label">Brands</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="category-cta">
+  <div class="container">
+    <h2>Can't Find What You're Looking For?</h2>
+    <p>Browse our complete product catalog or get in touch with our team for personalized recommendations</p>
+    <div class="btn-wrap">
+      <a href="{% url 'shop' %}" class="btn btn-light btn-medium">View All Products</a>
+      <a href="#" class="btn btn-outline-light btn-medium">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Free shipping</strong> Over $200
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Money back</strong> Return within 7 days
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Buy 4 get 5th</strong> 50% off
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Any questions?</strong> experts are ready
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
+
+{% endblock content %}
