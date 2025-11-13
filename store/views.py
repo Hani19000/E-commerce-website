@@ -3,7 +3,7 @@ from .models import Product, Category, Tag, Trademark, Profile
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm 
-from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, SignInForm
+from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, SignInForm, PasswordResetForm, SetPasswordForm
 from django import forms
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -11,7 +11,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
-User = get_user_model()
+from django.db.models.query_utils import Q
+# User = get_user_model()
 
 
 
@@ -51,6 +52,63 @@ def update_password(request):
         messages.error(request, "you must be loged in to acces to that page")
         return redirect('home')
     
+
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data['email']
+            associated_user = get_user_model().objects.filter(Q(email=user_email)).first()
+            if associated_user:
+                subject = "Password Reset Request"
+                message = render_to_string("reset_password.html",{
+                    'user' : associated_user,
+                    'domain': get_current_site(request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+                    'token': account_activation_token.make_token(associated_user),
+                    "Protocol" : 'https' if request.is_secure() else 'http'
+                })
+            email = EmailMessage(subject, message, to=[associated_user.email])
+            if email.send():
+                    messages.success(request,"your reset password has been sent, do the instruction send in your email")
+            else:
+                    messages.error(request, "probleme sending reset password email, <b>SERVER PROBLEM</b>")
+            return redirect('home')
+    
+        for key, error in list(form.errors.items()):
+                if key == 'captcha' and error[0] == 'This field is required.':
+                    messages.error(request, 'you must pass the recaptcha test !')
+                    continue
+
+
+    form = PasswordResetForm()
+    return render(request=request, template_name="password_reset.html", context={"form": form})
+
+def PasswordResetConfirm (request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user= User.objects.get(pk=uid)
+    except:
+        user=None
+    if user is not None and account_activation_token.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Your Password has been set. You may go ahead and login now")
+                return redirect(('login'))
+            else : 
+                for error in list(form.errors.values()):
+                    messages.error(request, error)
+
+        form = SetPasswordForm(user)
+        return render (request=request, template_name='password_reset_confirm.html', context={'form': form})
+    else:
+        messages.error(request, "alink is expired")
+    messages.error(request, 'something went wrong, redirecting back to homepage')
+    return redirect(('home'))
 
 def update_user(request):
     if request.user.is_authenticated:
@@ -135,7 +193,7 @@ def login_user(request):
     else:
         form = SignInForm()
     
-    return render(request, 'login.html', {'form': form})
+    return render(request, template_name='login.html', context={'form': form})
 
 
 def logout_user(request):

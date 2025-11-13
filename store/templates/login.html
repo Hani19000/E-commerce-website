@@ -17,67 +17,68 @@
     </div>
 
     <!-- Formulaire de connexion -->
-<form method="POST" action="{% url 'login' %}" class="login-form">
-  {% csrf_token %}
-  
-  <!-- Champ Username -->
-  <div class="form-group">
-    {{ form.username.label_tag }}
-    {{ form.username }}
-    {% if form.username.errors %}
-      <div class="error-message">
-        {% for error in form.username.errors %}
-          <small>{{ error }}</small>
-        {% endfor %}
+    <form method="POST" action="{% url 'login' %}" class="login-form">
+      {% csrf_token %}
+      
+      <!-- Champ Username -->
+      <div class="form-group">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="error-message">
+            {% for error in form.username.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
-  </div>
 
-  <!-- Champ Password -->
-  <div class="form-group">
-    {{ form.password.label_tag }}
-    {{ form.password }}
-    {% if form.password.errors %}
-      <div class="error-message">
-        {% for error in form.password.errors %}
-          <small>{{ error }}</small>
-        {% endfor %}
+      <!-- Champ Password -->
+      <div class="form-group">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="error-message">
+            {% for error in form.password.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
-  </div>
 
-  <!-- Options : Remember me & Forgot password -->
-  <div class="form-options">
-    <div class="remember-me">
-      <input type="checkbox" id="remember" name="remember">
-      <label for="remember">Remember me</label>
-    </div>
-    <a href="#" class="forgot-password">Forgot Password?</a>
-  </div>
-
-  <!-- reCAPTCHA -->
-  <div class="form-group">
-    {{ form.captcha }}
-    {% if form.captcha.errors %}
-      <div class="error-message">
-        {% for error in form.captcha.errors %}
-          <small>{{ error }}</small>
-        {% endfor %}
+      <!-- Options : Forgot password -->
+      <div class="form-options">
+        <a href="{% url 'password_reset' %}" class="forgot-password">
+          <i class="icon icon-help_outline"></i> Forgot Password?
+        </a>
       </div>
-    {% endif %}
-  </div>
 
-  <!-- Bouton de connexion -->
-  <button type="submit" class="login-button">
-    <i class="icon icon-lock"></i> Sign In
-  </button>
+      <!-- Sign Up Link -->
+      <div class="signup-link">
+        Don't have an account? <a href="{% url 'register' %}">Sign Up Now</a>
+      </div>
 
-  <!-- Reste du template... -->
-</form>
+      <!-- reCAPTCHA -->
+      <div class="form-group">
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+          <div class="error-message">
+            {% for error in form.captcha.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Bouton de connexion -->
+      <button type="submit" class="login-button">
+        <i class="icon icon-lock"></i> Sign In
+      </button>
+    </form>
   </div>
 </section>
 
-<!-- Section avantages (optionnelle) -->
+<!-- Section avantages -->
 <section id="shipping-information">
   <hr>
   <div class="container">
@@ -86,7 +87,8 @@
         <div class="icon-box">
           <i class="icon icon-truck"></i>
           <h4 class="block-title">
-            <strong>Free shipping</strong> Over $200
+            <strong>Free Shipping</strong>
+            On orders over $200
           </h4>
         </div>
       </div>
@@ -94,7 +96,8 @@
         <div class="icon-box">
           <i class="icon icon-return"></i>
           <h4 class="block-title">
-            <strong>Money back</strong> Return within 7 days
+            <strong>Easy Returns</strong>
+            Within 7 days guarantee
           </h4>
         </div>
       </div>
@@ -102,7 +105,8 @@
         <div class="icon-box">
           <i class="icon icon-tags1"></i>
           <h4 class="block-title">
-            <strong>Buy 4 get 5th</strong> 50% off
+            <strong>Special Offer</strong>
+            Buy 4 get 5th 50% off
           </h4>
         </div>
       </div>
@@ -110,7 +114,8 @@
         <div class="icon-box">
           <i class="icon icon-help_outline"></i>
           <h4 class="block-title">
-            <strong>Any questions?</strong> experts are ready
+            <strong>24/7 Support</strong>
+            Our experts are ready
           </h4>
         </div>
       </div>
@@ -118,5 +123,4 @@
   </div>
   <hr>
 </section>
-
 {% endblock content %}

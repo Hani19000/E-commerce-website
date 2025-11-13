@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, SetPasswordForm, PasswordResetForm
 from django import forms
 from .models import Profile
 from captcha.fields import ReCaptchaField
@@ -21,12 +21,18 @@ class UserInfoForm(forms.ModelForm):
 		model = Profile
 		fields = ('phone', 'address1', 'address2', 'city', 'state', 'zipcode', 'country')
 
-
+#changer le MDP quand l'utiisateur est deja login
 class ChangePasswordForm(SetPasswordForm):
 	class Meta:
 		model = User
 		field = ['new_password1', 'new_password2']
 
+#changer le MDP quand l'utiisateur n'est pas login
+class PasswordResetForm(PasswordResetForm):
+	def __init__(self, *args, **kwargs):
+		super(PasswordResetForm, self).__init__(*args, **kwargs)
+
+	captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())
 
 class UpdateUserForm(UserChangeForm):
 	email = forms.EmailField(label="Email Address", widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'jozetzthn.doe@example.com', 'id':'email'}), required=False)

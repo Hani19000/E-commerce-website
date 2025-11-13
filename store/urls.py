@@ -14,6 +14,7 @@ urlpatterns = [
     path('prduct/<int:pk>', views.product, name='product'),
     path('category/<str:foo>/', views.category, name='category'),
     path('category_summary', views.category_summary, name='category_summary'),
-    path('activate/<uidb64>/<token>', views.activate, name='activate')
-    
+    path('activate/<uidb64>/<token>', views.activate, name='activate'),
+    path('password_reset', views.password_reset_request, name='password_reset'),
+    path('reset/<uidb64>/<token>', views.PasswordResetConfirm, name='password_reset_confirm')
 ]
