@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block extra_css %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/checkout.css' %}">
 {% endblock extra_css %}
+
 {% block content %}
 <!-- Banner Section -->
 <section class="checkout-banner">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1 class="page-title">Checkout</h1>
+        <h1 class="page-title">Billing & Payment</h1>
         <div class="breadcrumbs">
           <span class="item">
             <a href="{% url 'home' %}">Home</a> / 
@@ -17,45 +19,29 @@
           <span class="item">
             <a href="{% url 'cart_summary' %}">Cart</a> / 
           </span>
-          <span class="item">Checkout</span>
+          <span class="item">
+            <a href="{% url 'checkout' %}">Checkout</a> / 
+          </span>
+          <span class="item">Billing</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Checkout Section -->
+<!-- Billing Section -->
 <section class="checkout-section">
   <div class="container checkout-container">
     {% if cart_products %}
     <div class="checkout-grid">
-      <!-- Checkout Form -->
+      <!-- Billing Form -->
       <div class="checkout-form-card">
-        {% if request.user.is_authenticated %}
-        <!-- Logged in user banner -->
-        <div class="user-info-banner">
-          <i class="icon icon-user"></i>
-          <div class="info-text">
-            <strong>Welcome back, {{ request.user.username }}!</strong>
-            <p>Your shipping information is pre-filled from your profile.</p>
-          </div>
-        </div>
-        {% else %}
-        <!-- Guest checkout notice -->
-        <div class="guest-notice">
-          <i class="icon icon-info"></i>
-          <div class="notice-text">
-            <strong>Checking out as a guest</strong>
-            <p>Already have an account? <a href="{% url 'login' %}">Sign in</a> to checkout faster with saved addresses.</p>
-          </div>
-        </div>
-        {% endif %}
-
-        <form method="POST" action="{% url 'billing_info' %}">
-          {% csrf_token %}
-
-          <!-- Shipping Information Section -->
-          <div class="form-section-header">
+        <!-- Shipping Address Summary -->
+        <div class="shipping-summary">
+          <i class="icon icon-check-circle"></i>
+          <div class="summary-content">
+            <strong>✓ Shipping Information Confirmed</strong>
+         <div class="form-section-header">
             <i class="icon icon-truck"></i>
             <h3>Shipping Information</h3>
           </div>
@@ -164,33 +150,202 @@
               {% endif %}
             </div>
           </div>
-
-          
-          <div class="form-full-width">
-            <label for="notes" class="field-label">Order Notes (Optional)</label>
-            <textarea id="notes" name="notes" placeholder="Any special instructions for your order?" rows="4"></textarea>
           </div>
-
-<!-- Action Buttons -->
-        <div class="checkout-actions">
-          <a href="{% url 'cart_summary' %}" class="btn-back">
-            <i class="icon icon-arrow-left"></i> update items
-          </a>
-    <button type="submit" class="btn-billing">
-      <i class="icon icon-arrow-right"></i> Continue to Billing
-    </button>
         </div>
 
+        <form method="POST">
+          {% csrf_token %}
+
+          <!-- Hidden shipping form data -->
+          {% for field in shipping_form %}
+            {{ field.as_hidden }}
+          {% endfor %}
+
+          <!-- Payment Information Section -->
+          <div class="form-section-header">
+            <i class="icon icon-credit-card"></i>
+            <h3>Payment Information</h3>
+          </div>
+
+          <!-- Cardholder Name -->
+          <div class="form-full-width">
+            <label for="{{ billing_form.card_name.id_for_label }}" class="field-label required">
+              Cardholder Name
+            </label>
+            {{ billing_form.card_name }}
+            {% if billing_form.card_name.errors %}
+              <ul class="errorlist">
+                {% for error in billing_form.card_name.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          <!-- Card Number and CVV -->
+          <div class="payment-card-info">
+            <div>
+              <label for="{{ billing_form.card_number.id_for_label }}" class="field-label required">
+                Card Number
+              </label>
+              {{ billing_form.card_number }}
+              {% if billing_form.card_number.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_number.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ billing_form.card_cvv.id_for_label }}" class="field-label required">
+                CVV
+              </label>
+              {{ billing_form.card_cvv }}
+              <div class="cvv-info">
+                <i class="icon icon-lock"></i>
+                <small>3-4 digits on back</small>
+              </div>
+              {% if billing_form.card_cvv.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_cvv.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Expiration Date -->
+          <div class="form-full-width">
+            <label for="{{ billing_form.card_exp_date.id_for_label }}" class="field-label required">
+              Expiration Date
+            </label>
+            {{ billing_form.card_exp_date }}
+            {% if billing_form.card_exp_date.errors %}
+              <ul class="errorlist">
+                {% for error in billing_form.card_exp_date.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          <!-- Billing Address Section -->
+          <div class="form-section-header" style="margin-top: 40px;">
+            <i class="icon icon-map"></i>
+            <h3>Billing Address</h3>
+          </div>
+
+          <!-- Billing Address Line 1 -->
+          <div class="form-full-width">
+            <label for="{{ billing_form.card_address1.id_for_label }}" class="field-label required">
+              Address Line 1
+            </label>
+            {{ billing_form.card_address1 }}
+            {% if billing_form.card_address1.errors %}
+              <ul class="errorlist">
+                {% for error in billing_form.card_address1.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          <!-- Billing Address Line 2 -->
+          <div class="form-full-width">
+            <label for="{{ billing_form.card_address2.id_for_label }}" class="field-label">
+              Address Line 2 (Optional)
+            </label>
+            {{ billing_form.card_address2 }}
+            {% if billing_form.card_address2.errors %}
+              <ul class="errorlist">
+                {% for error in billing_form.card_address2.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          <!-- City and State -->
+          <div class="form-grid">
+            <div>
+              <label for="{{ billing_form.card_city.id_for_label }}" class="field-label required">
+                City
+              </label>
+              {{ billing_form.card_city }}
+              {% if billing_form.card_city.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_city.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ billing_form.card_state.id_for_label }}" class="field-label required">
+                State / Province
+              </label>
+              {{ billing_form.card_state }}
+              {% if billing_form.card_state.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_state.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Zip Code and Country -->
+          <div class="form-grid">
+            <div>
+              <label for="{{ billing_form.card_zipcode.id_for_label }}" class="field-label required">
+                Zip Code
+              </label>
+              {{ billing_form.card_zipcode }}
+              {% if billing_form.card_zipcode.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_zipcode.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div>
+              <label for="{{ billing_form.card_country.id_for_label }}" class="field-label required">
+                Country
+              </label>
+              {{ billing_form.card_country }}
+              {% if billing_form.card_country.errors %}
+                <ul class="errorlist">
+                  {% for error in billing_form.card_country.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="checkout-actions">
+            <a href="{% url 'checkout' %}" class="btn-back">
+              <i class="icon icon-arrow-left"></i> Back to Shipping
+            </a>
+            <button type="submit" class="btn-checkout">
+              <i class="icon icon-check"></i> Place Order
+            </button>
+          </div>
 
           <!-- Security Badge -->
           <div class="security-badge">
             <i class="icon icon-lock"></i>
-            <span>Your information is secure and encrypted</span>
+            <span>Your payment information is secure and encrypted with 256-bit SSL</span>
           </div>
         </form>
       </div>
 
-      <!-- Order Summary -->
+      <!-- Order Summary (same as before) -->
       <div class="order-summary-card">
         <div class="summary-header">
           <div class="summary-icon">
@@ -274,25 +429,25 @@
     <div class="row d-flex flex-wrap align-items-center justify-content-between">
       <div class="col-md-3 col-sm-6">
         <div class="icon-box">
-          <i class="icon icon-truck"></i>
-          <h4 class="block-title">
-            <strong>Free Shipping</strong> On orders over $200
-          </h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="icon-box">
-          <i class="icon icon-return"></i>
-          <h4 class="block-title">
-            <strong>Easy Returns</strong> Within 7 days guarantee
-          </h4>
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-6">
-        <div class="icon-box">
           <i class="icon icon-lock"></i>
           <h4 class="block-title">
-            <strong>Secure Payment</strong> 100% protected
+            <strong>Secure Payment</strong> SSL Encrypted
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-shield"></i>
+          <h4 class="block-title">
+            <strong>Protected</strong> Buyer protection
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-credit-card"></i>
+          <h4 class="block-title">
+            <strong>All Cards</strong> Accepted
           </h4>
         </div>
       </div>
@@ -300,7 +455,7 @@
         <div class="icon-box">
           <i class="icon icon-help_outline"></i>
           <h4 class="block-title">
-            <strong>24/7 Support</strong> Our experts are ready
+            <strong>24/7 Support</strong> Always here for you
           </h4>
         </div>
       </div>
