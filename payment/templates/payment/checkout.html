@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/checkout.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Banner Section -->
+<section class="checkout-banner">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Checkout</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home</a> / 
+          </span>
+          <span class="item">
+            <a href="{% url 'cart_summary' %}">Cart</a> / 
+          </span>
+          <span class="item">Checkout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Checkout Section -->
+<section class="checkout-section">
+  <div class="container checkout-container">
+    {% if cart_products %}
+    <div class="checkout-grid">
+      <!-- Checkout Form -->
+      <div class="checkout-form-card">
+        <form method="POST" action="{% url 'checkout' %}">
+          {% csrf_token %}
+          
+          <!-- Billing Information -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="icon icon-user"></i> Billing Information
+            </h3>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" required>
+              </div>
+              <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number *</label>
+              <input type="tel" id="phone" name="phone" required>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="icon icon-truck"></i> Shipping Address
+            </h3>
+
+            <div class="form-group">
+              <label for="address1">Address Line 1 *</label>
+              <input type="text" id="address1" name="address1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="address2">Address Line 2</label>
+              <input type="text" id="address2" name="address2">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required>
+              </div>
+              <div class="form-group">
+                <label for="state">State / Province *</label>
+                <input type="text" id="state" name="state" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="zipcode">Zip Code *</label>
+                <input type="text" id="zipcode" name="zipcode" required>
+              </div>
+              <div class="form-group">
+                <label for="country">Country *</label>
+                <input type="text" id="country" name="country" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="icon icon-credit-card"></i> Payment Method
+            </h3>
+
+            <div class="payment-methods">
+              <div class="payment-option">
+                <input type="radio" id="credit_card" name="payment_method" value="credit_card" checked>
+                <label for="credit_card">
+                  <div class="payment-icon">
+                    <i class="icon icon-credit-card"></i>
+                  </div>
+                  <div class="payment-info">
+                    <h4>Credit / Debit Card</h4>
+                    <p>Pay securely with your card</p>
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-option">
+                <input type="radio" id="paypal" name="payment_method" value="paypal">
+                <label for="paypal">
+                  <div class="payment-icon">
+                    <i class="icon icon-paypal"></i>
+                  </div>
+                  <div class="payment-info">
+                    <h4>PayPal</h4>
+                    <p>Fast and secure payment</p>
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-option">
+                <input type="radio" id="cod" name="payment_method" value="cod">
+                <label for="cod">
+                  <div class="payment-icon">
+                    <i class="icon icon-money"></i>
+                  </div>
+                  <div class="payment-info">
+                    <h4>Cash on Delivery</h4>
+                    <p>Pay when you receive</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div class="form-section">
+            <div class="form-group">
+              <label for="notes">Order Notes (Optional)</label>
+              <textarea id="notes" name="notes" placeholder="Any special instructions for your order?"></textarea>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="checkout-actions">
+            <a href="{% url 'cart_summary' %}" class="btn-back">
+              <i class="icon icon-arrow-left"></i> Back to Cart
+            </a>
+            <button type="submit" class="btn-checkout">
+              <i class="icon icon-check"></i> Place Order
+            </button>
+          </div>
+
+          <!-- Security Badge -->
+          <div class="security-badge">
+            <i class="icon icon-lock"></i>
+            <span>Your payment information is secure and encrypted</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary-card">
+        <div class="summary-header">
+          <div class="summary-icon">
+            <i class="icon icon-shopping-bag"></i>
+          </div>
+          <div>
+            <h2>Order Summary</h2>
+            <p class="item-count">{{ cart_products|length }} item{{ cart_products|length|pluralize }}</p>
+          </div>
+        </div>
+
+        <div class="order-items">
+          {% for product in cart_products %}
+          <div class="order-item">
+            <div class="item-image">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            </div>
+            <div class="item-details">
+              <div class="item-name">{{ product.name }}</div>
+              <div class="item-meta">
+                <span class="item-quantity">
+                  <i class="icon icon-close"></i>
+                  {% for key, value in quantities.items %}
+                    {% if key == product.id|slugify %}
+                      {{ value }}
+                    {% endif %}
+                  {% endfor %}
+                </span>
+                <span class="item-price {% if product.is_sale %}sale{% endif %}">
+                  {% if product.is_sale %}
+                    ${{ product.sale_price }}
+                    <span class="original-price">${{ product.price }}</span>
+                  {% else %}
+                    ${{ product.price }}
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="summary-totals">
+          <div class="total-row subtotal">
+            <span>Subtotal</span>
+            <span>${{ totals|floatformat:2 }}</span>
+          </div>
+          <div class="total-row shipping">
+            <span>Shipping</span>
+            <span class="free-badge">FREE</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <span class="amount">${{ totals|floatformat:2 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <!-- Empty Cart State -->
+    <div class="checkout-form-card">
+      <div class="empty-cart">
+        <div class="empty-icon">
+          <i class="icon icon-shopping-bag"></i>
+        </div>
+        <h3>Your Cart is Empty</h3>
+        <p>Add some products to your cart before checking out</p>
+        <a href="{% url 'shop' %}" class="btn-checkout">
+          <i class="icon icon-arrow-left"></i> Continue Shopping
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Shipping Information Section -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Free Shipping</strong> On orders over $200
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Easy Returns</strong> Within 7 days guarantee
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-lock"></i>
+          <h4 class="block-title">
+            <strong>Secure Payment</strong> 100% protected
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>24/7 Support</strong> Our experts are ready
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
+{% endblock content %}
