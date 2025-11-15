@@ -4,6 +4,10 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm 
 from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm, SignInForm, PasswordResetForm, SetPasswordForm
+
+from payment.forms import ShippingForm
+from payment.models import ShippingAddress
+
 from django import forms
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,19 +16,44 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.db.models.query_utils import Q
+import json
+from cart.cart import Cart
 # User = get_user_model()
 
-
+def search(request):
+    #determin if they filled out the form
+    if request.method == "POST":
+        searched = request.POST['searched']
+        #query the prodct DB model
+        searched = Product.objects.filter(name__icontains=searched)
+        #test for null
+        if not searched :
+            messages.error(request, "you must be loged in to acces to that page")
+            return render(request, "search.html", {})
+        else:
+            return render(request, "search.html", {'searched':searched})
+    else:
+        return render(request, "search.html", {})
 
 def update_info(request):
     if request.user.is_authenticated:
+        #get current user
         current_user, created = Profile.objects.get_or_create(user=request.user)
+        #get current users shipping info
+
+        shipping_user, created = ShippingAddress.objects.get_or_create(user=request.user)
+        #get original user form
         form = UserInfoForm(request.POST or None, instance=current_user)
-        if form.is_valid():
+        #get users's shipping form
+        shipping_form = ShippingForm(request.POST or None, instance=shipping_user )
+        if form.is_valid() or shipping_form.is_valid():
+            #save original form
             form.save()
+            #save shipping form
+            shipping_form.save()
             messages.success(request, "Your info has been updated")
             return redirect ('home')
-        return render(request, "update_info.html", {'form': form})
+        return render(request, "update_info.html", {'form': form, 'shipping_form':shipping_form})
     else:
         messages.error(request, "you must be loged in to acces to that page")
         return redirect('home')
@@ -175,10 +204,23 @@ def login_user(request):
                 username=form.cleaned_data["username"],
                 password=form.cleaned_data["password"]
             )
-            
+            first_login = user.last_login is None
+            login(request, user)
             if user is not None:
-                first_login = user.last_login is None
-                login(request, user)
+                #avoir la session de carte meme quand je me déconnecte
+                current_user = Profile.objects.get(user__id=request.user.id)
+                #get their saved cart from DB
+                saved_cart = current_user.old_cart
+                #convert db str to python dictionary {"3",2, "4":5} to dictionary
+                if saved_cart :
+                    #convert dictionary using JSON
+                    converted_cart = json.loads(saved_cart)
+                    # add the loaded cart dictionary to our session
+                    # get the cart
+                    cart= Cart(request)
+                    #loop thru the cart and add thetems from the db
+                    for key, value in converted_cart.items():
+                        cart.db_add(product=key, quantity=value)
                 messages.success(request, ('Welcom you have been logged in !'))
                 if first_login:
                     return redirect('update_info')

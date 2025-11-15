@@ -3,16 +3,16 @@
 {% block content %}
 
 <section class="login-container">
-  <div class="login-wrapper" style="max-width: 600px;">
+  <div class="login-wrapper" style="max-width: 800px;">
     <div class="login-header">
       <div class="profile-icon">
         <i class="icon icon-location"></i>
       </div>
-      <h2>Shipping Information</h2>
-      <p>Update your delivery and contact details</p>
+      <h2>Profile & Shipping Information</h2>
+      <p>Update your contact and delivery details</p>
     </div>
 
-    <form method="POST" action="" class="login-form">
+    <form method="POST" action="{% url 'update_info' %}" class="login-form">
       {% csrf_token %}
 
       <!-- Contact Information Section -->
@@ -22,8 +22,9 @@
         </h3>
         
         <div class="form-group">
-          <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+          <label for="{{ form.phone.id_for_label }}">Phone Number <span class="required">*</span></label>
           {{ form.phone }}
+          <small class="form-hint">Format: +1234567890 or 0123456789</small>
           {% if form.phone.errors %}
             <div class="error-message">
               {% for error in form.phone.errors %}
@@ -34,10 +35,10 @@
         </div>
       </div>
 
-      <!-- Shipping Address Section -->
+      <!-- Billing Address Section -->
       <div class="form-section">
         <h3 class="section-title">
-          <i class="icon icon-truck"></i> Shipping Address
+          <i class="icon icon-credit-card"></i> Billing Address
         </h3>
         
         <div class="form-group">
@@ -119,10 +120,128 @@
         </div>
       </div>
 
+      <div class="divider">
+        <span>Shipping Information</span>
+      </div>
+
+      <!-- Shipping Address Section -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="icon icon-truck"></i> Shipping Address
+        </h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_full_name.id_for_label }}">Full Name <span class="required">*</span></label>
+            {{ shipping_form.shipping_full_name }}
+            {% if shipping_form.shipping_full_name.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_full_name.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_email.id_for_label }}">Email Address <span class="required">*</span></label>
+            {{ shipping_form.shipping_email }}
+            {% if shipping_form.shipping_email.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_email.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="{{ shipping_form.shipping_address1.id_for_label }}">Address Line 1 <span class="required">*</span></label>
+          {{ shipping_form.shipping_address1 }}
+          <small class="form-hint">Street address, P.O. box, company name</small>
+          {% if shipping_form.shipping_address1.errors %}
+            <div class="error-message">
+              {% for error in shipping_form.shipping_address1.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ shipping_form.shipping_addresse2.id_for_label }}">Address Line 2 <span class="optional">(Optional)</span></label>
+          {{ shipping_form.shipping_addresse2 }}
+          <small class="form-hint">Apartment, suite, unit, building, floor, etc.</small>
+          {% if shipping_form.shipping_addresse2.errors %}
+            <div class="error-message">
+              {% for error in shipping_form.shipping_addresse2.errors %}
+                <small>{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_city.id_for_label }}">City <span class="required">*</span></label>
+            {{ shipping_form.shipping_city }}
+            {% if shipping_form.shipping_city.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_city.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_state.id_for_label }}">State / Province</label>
+            {{ shipping_form.shipping_state }}
+            {% if shipping_form.shipping_state.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_state.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_zipcode.id_for_label }}">ZIP / Postal Code <span class="required">*</span></label>
+            {{ shipping_form.shipping_zipcode }}
+            {% if shipping_form.shipping_zipcode.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_zipcode.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ shipping_form.shipping_country.id_for_label }}">Country <span class="required">*</span></label>
+            {{ shipping_form.shipping_country }}
+            {% if shipping_form.shipping_country.errors %}
+              <div class="error-message">
+                {% for error in shipping_form.shipping_country.errors %}
+                  <small>{{ error }}</small>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
       <!-- Non-field Errors -->
-      {% if form.non_field_errors %}
+      {% if form.non_field_errors or shipping_form.non_field_errors %}
         <div class="alert alert-error">
           {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+          {% for error in shipping_form.non_field_errors %}
             {{ error }}
           {% endfor %}
         </div>
@@ -131,22 +250,83 @@
       <!-- Action Buttons -->
       <div class="button-group">
         <button type="submit" class="login-button">
-          <i class="icon icon-check"></i> Save Information
+          <i class="icon icon-check"></i> Save All Information
         </button>
         <a href="{% url 'home' %}" class="cancel-button">
           <i class="icon icon-close"></i> Cancel
         </a>
       </div>
 
-      <!-- Info Box -->
+      <!-- Info Boxes -->
       <div class="info-box">
+        <i class="icon icon-help_outline"></i>
         <div>
-          <strong>Why do we need this?</strong>
-          <p>This information helps us deliver your orders accurately and contact you if needed.</p>
+          <strong>Why do we need this information?</strong>
+          <p>Your billing address is used for payment processing, while your shipping address ensures accurate delivery of your orders. We keep this information secure and private.</p>
         </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="account-actions" style="margin-top: 30px;">
+        <a href="{% url 'update_user' %}" class="action-link">
+          <i class="icon icon-user"></i>
+          <div>
+            <strong>Update Account Info</strong>
+            <small>Change your name, email, and username</small>
+          </div>
+        </a>
+        <a href="{% url 'update_password' %}" class="action-link">
+          <i class="icon icon-lock"></i>
+          <div>
+            <strong>Change Password</strong>
+            <small>Update your account security</small>
+          </div>
+        </a>
       </div>
     </form>
   </div>
+</section>
+
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Free shipping</strong> Over $200
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Money back</strong> Return within 7 days
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Buy 4 get 5th</strong> 50% off
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Any questions?</strong> experts are ready
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
 </section>
 
 {% endblock content %}

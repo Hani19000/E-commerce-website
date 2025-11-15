@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+
+<!-- Hero Search Banner -->
+<section class="search-hero-banner">
+  <div class="container">
+    <div class="search-hero-content">
+      <div class="search-icon-wrapper">
+        <i class="icon icon-search"></i>
+      </div>
+      <h1 class="search-hero-title">Recherchez Vos Produits</h1>
+      <p class="search-hero-subtitle">Explorez notre collection de plus de 1000 produits</p>
+      
+      <!-- Search Form -->
+      <form method="POST" action="{% url 'search' %}" class="search-form-hero">
+        {% csrf_token %}
+        <div class="search-input-wrapper">
+          <i class="icon icon-search search-input-icon"></i>
+          <input 
+            type="text" 
+            name="searched" 
+            class="search-input-main" 
+            placeholder="Rechercher un produit, catégorie, marque..."
+            required
+            autofocus
+          >
+          <button type="submit" class="search-submit-btn">
+            Rechercher
+          </button>
+        </div>
+      </form>
+
+      <!-- Popular Searches -->
+      <div class="popular-searches">
+        <span class="popular-label">Recherches populaires :</span>
+        <a href="{% url 'category' 't-shirts' %}" class="popular-tag">T-shirts</a>
+        <a href="{% url 'category' 'chaussures' %}" class="popular-tag">Chaussures</a>
+        <a href="{% url 'category' 'veste' %}" class="popular-tag">Vestes</a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if searched %}
+  <!-- Results Header -->
+  <section class="search-results-header">
+    <div class="container">
+      <div class="results-info">
+        <h2 class="results-title">
+          Résultats de recherche
+        </h2>
+        <p class="results-count">{{ searched|length }} produit{{ searched|length|pluralize }} trouvé{{ searched|length|pluralize }}</p>
+      </div>
+      
+      <!-- Filter/Sort Bar -->
+      <div class="results-actions">
+        <select class="sort-select">
+          <option>Trier par</option>
+          <option>Prix croissant</option>
+          <option>Prix décroissant</option>
+          <option>Nouveautés</option>
+          <option>Popularité</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Grid -->
+  <section class="search-results-grid padding-large">
+    <div class="container">
+      <div class="row">
+        {% for product in searched %}
+        <div class="col-lg-3 col-md-4 col-sm-6 product-col">
+          <div class="product-card">
+            <div class="product-image-wrapper" >
+              <a href="{% url 'product' product.id %}" class="product-link">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+              </a>
+              <div class="product-overlay">
+                <div class="overlay-buttons">
+                  <a href="{% url 'product' product.id %}" class="btn-icon btn-light tooltip">
+                    <i class="icon icon-eye"></i>
+                  </a>
+                </div>
+              </div>
+
+            {% if product.is_sale %}
+                <span class="sale-badge">Sale</span>
+              {% endif %}
+            </div>
+            
+            <div class="product-info">
+              <div class="product-category-tag">{{ product.category.name }}</div>
+              <h3 class="product-title">
+                <a href="{% url 'product' product.id %}">{{ product.name }}</a>
+              </h3>
+              
+              <div class="product-price-section">
+                {% if product.is_sale %}
+                  <span class="current-price">${{ product.sale_price }}</span>
+                  <span class="original-price">${{ product.price }}</span>
+                {% else %}
+                  <span class="current-price">${{ product.price }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% comment %} 
+{% else %}
+  <!-- Empty State -->
+  <section class="search-empty-state padding-large">
+    <div class="container">
+      <div class="empty-state-content">
+        <div class="empty-state-icon">
+          <i class="icon icon-search"></i>
+        </div>
+        <h2 class="empty-state-title">Aucun résultat trouvé</h2>
+        {% if searched_term %}
+          <p class="empty-state-text">
+            Nous n'avons trouvé aucun produit correspondant à "{{ searched_term }}"
+          </p>
+        {% else %}
+          <p class="empty-state-text">
+            Utilisez la barre de recherche ci-dessus pour trouver vos produits
+          </p>
+        {% endif %}
+        
+        <div class="empty-state-suggestions">
+          <h3>Suggestions :</h3>
+          <ul>
+            <li>Vérifiez l'orthographe de votre recherche</li>
+            <li>Utilisez des termes plus généraux</li>
+            <li>Essayez différents mots-clés</li>
+          </ul>
+        </div>
+        
+        <div class="empty-state-actions">
+          <a href="{% url 'shop' %}" class="btn btn-primary btn-medium">
+            <i class="icon icon-arrow-left"></i>
+            Parcourir tous les produits
+          </a>
+          <a href="{% url 'category_summary' %}" class="btn btn-outline-dark btn-medium">
+            <i class="icon icon-th"></i>
+            Voir les catégories
+          </a>
+        </div>
+      </div>
+    </div>
+  </section> {% endcomment %}
+{% endif %}
+
+<!-- Categories Suggestion Section -->
+<section class="categories-suggestion bg-light-grey padding-large">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2 class="section-title">Parcourir par Catégorie</h2>
+      <p>Trouvez rapidement ce que vous cherchez</p>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <a href="{% url 'category' 'veste' %}" class="category-card-link">
+          <div class="category-quick-card">
+            <div class="category-icon-box">
+              <i class="icon icon-tags1"></i>
+            </div>
+            <h3>Vestes</h3>
+            <p>Découvrez notre collection</p>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-md-4">
+        <a href="{% url 'category' 't-shirts' %}" class="category-card-link">
+          <div class="category-quick-card">
+            <div class="category-icon-box">
+              <i class="icon icon-tags1"></i>
+            </div>
+            <h3>T-Shirts</h3>
+            <p>Style et confort</p>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-md-4">
+        <a href="{% url 'category' 'chaussures' %}" class="category-card-link">
+          <div class="category-quick-card">
+            <div class="category-icon-box">
+              <i class="icon icon-tags1"></i>
+            </div>
+            <h3>Chaussures</h3>
+            <p>Pour tous les styles</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Livraison gratuite</strong> Plus de 200$
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Retour gratuit</strong> Sous 7 jours
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Achetez-en 4</strong> Le 5e à 50%
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Des questions ?</strong> Support 24/7
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
+
+{% endblock content %}
