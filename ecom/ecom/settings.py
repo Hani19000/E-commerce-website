@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 #load our environmental variabl
-# load_dotenv()
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -92,14 +92,7 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "railway",
-        'USER': "postgres",
-        'PASSWORD': os.environ.get("PGPASSWORD"),
-        'HOST': os.environ.get("PGHOST"),  # Remplacez XXXXX
-        'PORT': os.environ.get("PGPORT"),
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
 
 
