@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 from decouple import config
 from dotenv import load_dotenv
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,7 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 #load our environmental variabl
 load_dotenv()
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -33,8 +31,8 @@ SECRET_KEY = 'django-insecure-t2no#c5(osz0jhilv5mkw^bv^3!f!8b!^w!z-&h8pk5mjz_)(p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['e-commerce-website-production-53d7.up.railway.app', 'https://e-commerce-website-production-53d7.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['e-commerce-website-production-53d7.up.railway.app', 'https://e-commerce-website-production-53d7.up.railway.app']
+ALLOWED_HOSTS = ['e-commerce-website-production-53d7.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://e-commerce-website-production-53d7.up.railway.app']
 
 # Application definition
 
@@ -91,9 +89,18 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 
+
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.postgresql')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='railway'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='postgres.railway.internal'),  # ✅ Configuré via .env
+        'PORT': config('DB_PORT', default='5432'),
+    }
 }
+
 
 
 # Password validation
