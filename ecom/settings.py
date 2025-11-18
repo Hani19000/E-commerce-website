@@ -93,11 +93,11 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='railway'),
-        'USER': config('DB_USER', default='postgres'),
+        'NAME': 'railway',
+        'USER': 'postgres',
         'PASSWORD': 'GzUTdWKsWXyltITdifaBUtBcsCBlhleu',
-        'HOST': config('DB_HOST', default='postgres.railway.internal'),  # ✅ Configuré via .env
-        'PORT': config('DB_PORT', default='5432'),
+        'HOST': 'postgres.railway.internal',  # ✅ Configuré via .env
+        'PORT': '5432',
     }
 }
 
