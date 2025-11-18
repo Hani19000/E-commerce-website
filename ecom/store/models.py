@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
 #customer profile
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date_modified = models.DateTimeField(User, auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
     phone = models.CharField(max_length=20, blank=True)
     address1 = models.CharField(max_length=200, blank=True)
     address2 = models.CharField(max_length=200, blank=True)

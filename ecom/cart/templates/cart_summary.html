@@ -8,7 +8,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1 class="page-title">Shopping Cart</h1>
+        <h1 class="page-title">cart summary</h1>
         <div class="breadcrumbs">
           <span class="item">
             <a href="{% url 'home' %}">Home /</a>
@@ -27,6 +27,7 @@
       <h2 class="section-title">Featured Products</h2>            
       <div class="btn-wrap">
         <a href="{% url 'shop' %}" class="d-flex align-items-center">View all products <i class="icon icon icon-arrow-io"></i></a>
+        <a href="{% url 'checkout' %}" class="d-flex align-items-center">checkout</a>
         <strong>Total :${{ totals }}</strong>
       </div>            
     </div>

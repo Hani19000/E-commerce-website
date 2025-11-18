@@ -462,18 +462,6 @@
    8. UPDATE USER PAGE
    ============================================ */
 
-/* Hide Django password field */
-.login-form input[type="password"][name*="password"] {
-  display: none;
-}
-
-.login-form label[for*="password"] {
-  display: none;
-}
-
-.login-form .form-group:has(input[readonly]) {
-  display: none;
-}
 
 /* Profile Icon */
 .profile-icon {

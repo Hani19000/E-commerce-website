@@ -60,7 +60,6 @@
 
             <div id="main-nav" class="stellarnav d-flex justify-content-end right">
             <ul class="menu-list">
-
                 <li class="menu-item has-sub">
                 <a href="{% url 'home' %}" class="item-anchor active d-flex align-item-center" data-effect="Home">Home</a>
                 </li>
@@ -73,21 +72,33 @@
                 <a class="item-anchor d-flex align-item-center" data-effect="Shop">categories<i class="icon icon-chevron-down"></i></a>
                 <ul class="submenu">
                     <li><a href="{% url 'category_summary' %}" class="item-anchor">All product</a></li>
-                    <li><a href="{% url 'category' 'veste' %}" class="item-anchor">vestes</a></li>
+                    <li><a href="{% url 'category' 'vestes' %}" class="item-anchor">vestes</a></li>
                     <li><a href="{% url 'category' 't-shirts' %}" class="item-anchor">T-shirts</a></li>
-                    <li><a href="{% url 'category' 'jeans' %}" class="item-anchor">jean</a></li>
+                    <li><a href="{% url 'category' 'jeans' %}" class="item-anchor">jeans</a></li>
                     <li><a href="{% url 'category' 'chaussures' %}" class="item-anchor">chaussures</a></li>
                     <li><a href="{% url 'category' 'survements' %}" class="item-anchor">survetement</a></li>
                 </ul>
                 </li>
-
-                <li class="menu-item has-sub">
+            {% if user.is_authenticated %}
+            <li class="menu-item has-sub">
                 <a class="item-anchor d-flex align-item-center" data-effect="Shop">Profile<i class="icon icon-chevron-down"></i></a>
-                <ul class="submenu">
-                    <li><a href="{% url 'update_info' %}" class="item-anchor">User Profile</a></li>
-                    <li><a href="{% url 'update_user' %}" class="item-anchor">User info</a></li>
-                </ul>
-                </li>
+                    <ul class="submenu">
+                        <li><a href="{% url 'update_info' %}" class="item-anchor">User Profile</a></li>
+                        <li><a href="{% url 'update_user' %}" class="item-anchor">User info</a></li>
+                        <li><a href="{% url 'my_orders' %}" class="item-anchor">My orders</a></li>
+                    </ul>
+            </li>
+            {% endif %}
+
+            {% if user.is_superuser %}
+            <li class="menu-item has-sub">
+                <a class="item-anchor d-flex align-item-center" data-effect="Shop">Orders<i class="icon icon-chevron-down"></i></a>
+                    <ul class="submenu">
+                        <li><a href="{% url 'shipped_dash' %}" class="item-anchor">Shipped Orders</a></li>
+                        <li><a href="{% url 'not_shipped_dash' %}" class="item-anchor">Unshipped Orders</a></li>
+                    </ul>
+            </li>
+            {% endif %}
 
                 <li><a href="{% url 'about' %}" class="item-anchor" data-effect="About">About</a></li>
 
@@ -101,3 +112,4 @@
     </div>
     </div>
 </nav>
+
