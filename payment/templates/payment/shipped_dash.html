@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin_orders.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Banner Section -->
+<section class="checkout-banner">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Orders Dashboard</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home</a> / 
+          </span>
+          <span class="item">Shipped Orders</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Section -->
+<section class="dashboard-section">
+  <div class="container dashboard-container">
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon shipped">
+          <i class="icon icon-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ orders|length }}</h3>
+          <p>Shipped Orders</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="orders-card">
+      <div class="card-header">
+        <h2><i class="icon icon-truck"></i> Shipped Orders</h2>
+        <div class="view-toggle">
+          <a href="{% url 'not_shipped_dash' %}" class="toggle-btn">Pending</a>
+          <a href="{% url 'shipped_dash' %}" class="toggle-btn active">Shipped</a>
+        </div>
+      </div>
+
+      <div class="orders-table-container">
+        {% if orders %}
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer Email</th>
+              <th>Amount</th>
+              <th>Date Shipped</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in orders %}
+            <tr>
+              <td>
+                <a href="{% url 'orders' item.id %}" class="order-id-link">
+                  {{ item.id }}
+                </a>
+              </td>
+              <td>{{ item.email }}</td>
+              <td><strong>${{ item.amount_paid }}</strong></td>
+              <td>{{ item.date_shipped|date:"M d, Y H:i" }}</td>
+              <td>
+                <span class="status-badge shipped">Shipped</span>
+              </td>
+              <td>
+                <form method="POST" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="num" value="{{ item.id }}">
+                  <button type="submit" class="action-btn unship">
+                    <i class="icon icon-return"></i> Mark as Unshipped
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="icon icon-package"></i>
+          </div>
+          <h3>No Shipped Orders</h3>
+          <p>There are no shipped orders yet.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/user_orders.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Banner Section -->
+<section class="site-banner jarallax min-height300 padding-large" style="background: url({% static 'images/hero-image.jpg' %}) no-repeat;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Mes Commandes</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home /</a>
+          </span>
+          <span class="item">
+            <a href="{% url 'update_user' %}">Mon Compte /</a>
+          </span>
+          <span class="item">Mes Commandes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Orders Section -->
+<section class="user-orders-section padding-large">
+  <div class="container">
+    
+    <!-- Section Header -->
+    <div class="section-header text-center">
+      <h2 class="section-title">Historique de mes Commandes</h2>
+      <p>Consultez et suivez toutes vos commandes passées</p>
+    </div>
+
+    {% if orders %}
+      <!-- Orders Stats -->
+      <div class="orders-stats-row">
+        <div class="stat-box">
+          <div class="stat-icon">
+            <i class="icon icon-shopping-bag"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ orders|length }}</h3>
+            <p>Commande{% if orders|length > 1 %}s{% endif %} Total{% if orders|length > 1 %}es{% endif %}</p>
+          </div>
+        </div>
+        
+        <div class="stat-box">
+          <div class="stat-icon shipped">
+            <i class="icon icon-truck"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ shipped_count }}</h3>
+            <p>Expédiée{% if shipped_count > 1 %}s{% endif %}</p>
+          </div>
+        </div>
+        
+        <div class="stat-box">
+          <div class="stat-icon pending">
+            <i class="icon icon-clock"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ pending_count }}</h3>
+            <p>En Attente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders List -->
+      <div class="orders-list">
+        {% for order in orders %}
+        <div class="order-card">
+          <!-- Order Header -->
+          <div class="order-card-header">
+            <div class="order-info-left">
+              <div class="order-number">
+                <i class="icon icon-tag"></i>
+                <span>Commande #{{ order.id }}</span>
+              </div>
+              <div class="order-date">
+                <i class="icon icon-calendar"></i>
+                Commandé le {{ order.date_ordered|date:"d F Y" }}
+              </div>
+            </div>
+            <div class="order-info-right">
+              {% if order.shipped %}
+                <span class="order-status shipped">
+                  <i class="icon icon-check-circle"></i>
+                  Expédiée
+                </span>
+              {% else %}
+                <span class="order-status pending">
+                  <i class="icon icon-clock"></i>
+                  En Préparation
+                </span>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Order Body -->
+          <div class="order-card-body">
+            <div class="order-details-grid">
+              <!-- Customer Info -->
+              <div class="detail-section">
+                <h4><i class="icon icon-user"></i> Informations</h4>
+                <p><strong>Nom:</strong> {{ order.full_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
+              </div>
+
+              <!-- Shipping Info -->
+              <div class="detail-section">
+                <h4><i class="icon icon-map"></i> Adresse de Livraison</h4>
+                <div class="shipping-address">{{ order.shipping_address|linebreaks }}</div>
+              </div>
+
+              <!-- Order Timeline -->
+              <div class="detail-section">
+                <h4><i class="icon icon-clock"></i> Suivi</h4>
+                <div class="timeline">
+                  <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                      <p class="timeline-title">Commande Passée</p>
+                      <p class="timeline-date">{{ order.date_ordered|date:"d/m/Y" }}</p>
+                    </div>
+                  </div>
+                  {% if order.shipped %}
+                  <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                      <p class="timeline-title">Expédiée</p>
+                      <p class="timeline-date">{{ order.date_shipped|date:"d/m/Y à H:i" }}</p>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                      <p class="timeline-title">En Préparation</p>
+                      <p class="timeline-date">Expédition prochaine</p>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="order-items-section">
+              <h4><i class="icon icon-package"></i> Articles Commandés</h4>
+              <div class="order-items-list">
+                {% for item in order.orderitem_set.all %}
+                <div class="order-item">
+                  <div class="item-image">
+                    {% if item.product.image %}
+                      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                      <div class="item-placeholder">
+                        <i class="icon icon-image"></i>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="item-details">
+                    <h5>{{ item.product.name }}</h5>
+                    <p class="item-meta">Quantité: {{ item.quantity }}</p>
+                  </div>
+                  <div class="item-price">
+                    <span class="price">${{ item.price }}</span>
+                    <span class="total">Total: ${{ item.total|floatformat:2 }}</span>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Footer -->
+          <div class="order-card-footer">
+            <div class="order-total">
+              <span class="total-label">Total de la Commande:</span>
+              <span class="total-amount">${{ order.amount_paid }}</span>
+            </div>
+            <div class="order-actions">
+              <a href="{% url 'home' %}" class="btn btn-dark btn-small">
+                <i class="icon icon-return"></i>
+                Commander à Nouveau
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="empty-orders-state">
+        <div class="empty-icon">
+          <i class="icon icon-shopping-bag"></i>
+        </div>
+        <h3>Aucune Commande</h3>
+        <p>Vous n'avez pas encore passé de commande.</p>
+        <p>Découvrez notre collection et commencez vos achats dès maintenant !</p>
+        <div class="empty-actions">
+          <a href="{% url 'shop' %}" class="btn btn-dark btn-large">
+            <i class="icon icon-shopping-bag"></i>
+            Découvrir la Boutique
+          </a>
+          <a href="{% url 'category_summary' %}" class="btn btn-outline-dark btn-large">
+            <i class="icon icon-tags1"></i>
+            Parcourir les Catégories
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Shipping Information -->
+<section id="shipping-information">
+  <hr>
+  <div class="container">
+    <div class="row d-flex flex-wrap align-items-center justify-content-between">
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-truck"></i>
+          <h4 class="block-title">
+            <strong>Livraison Gratuite</strong> Sur les commandes de plus de 200$
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-return"></i>
+          <h4 class="block-title">
+            <strong>Retours Faciles</strong> Garantie de 7 jours
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-tags1"></i>
+          <h4 class="block-title">
+            <strong>Offre Spéciale</strong> Achetez 4, obtenez le 5ème à -50%
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="icon-box">
+          <i class="icon icon-help_outline"></i>
+          <h4 class="block-title">
+            <strong>Support 24/7</strong> Nos experts sont prêts
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+</section>
+
+{% endblock content %}

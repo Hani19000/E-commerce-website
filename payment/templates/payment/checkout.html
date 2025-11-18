@@ -75,6 +75,21 @@
             {% endif %}
           </div>
 
+          <!-- Email -->
+          <div class="form-full-width">
+            <label for="{{ shipping_form.shipping_email.id_for_label }}" class="field-label required">
+              Email
+            </label>
+            {{ shipping_form.shipping_email }}
+            {% if shipping_form.shipping_email.errors %}
+              <ul class="errorlist">
+                {% for error in shipping_form.shipping_email.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          
           <!-- Address Line 1 -->
           <div class="form-full-width">
             <label for="{{ shipping_form.shipping_address1.id_for_label }}" class="field-label required">

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin_orders.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Banner Section -->
+<section class="checkout-banner">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="page-title">Order Details</h1>
+        <div class="breadcrumbs">
+          <span class="item">
+            <a href="{% url 'home' %}">Home</a> / 
+          </span>
+          <span class="item">
+            <a href="{% url 'not_shipped_dash' %}">Orders</a> / 
+          </span>
+          <span class="item">Order #{{ order.id }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Order Detail Section -->
+<section class="dashboard-section">
+  <div class="container dashboard-container">
+    <div class="order-detail-card">
+      <!-- Order Header -->
+      <div class="order-header">
+        <div class="order-title">
+          <h2>Order #{{ order.id }}</h2>
+          <p class="order-meta">
+            {% if order.shipped %}
+              <span class="status-badge shipped">Shipped</span>
+              Shipped on {{ order.date_shipped|date:"F d, Y at H:i" }}
+            {% else %}
+              <span class="status-badge pending">Pending</span>
+              Ordered on {{ order.date_ordered|date:"F d, Y" }}
+            {% endif %}
+          </p>
+        </div>
+        <div class="order-amount">${{ order.amount_paid }}</div>
+      </div>
+
+      <!-- Order Information Grid -->
+      <div class="info-grid">
+        <!-- Customer Info -->
+        <div class="info-section">
+          <h3><i class="icon icon-user"></i> Customer Information</h3>
+          <p><strong>Name:</strong> {{ order.full_name }}</p>
+          <p><strong>Email:</strong> {{ order.email }}</p>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="info-section">
+          <h3><i class="icon icon-map"></i> Shipping Address</h3>
+          <div class="shipping-address">{{ order.shipping_address }}</div>
+        </div>
+
+        <!-- Order Timeline -->
+        <div class="info-section">
+          <h3><i class="icon icon-clock"></i> Order Timeline</h3>
+          <p><strong>Ordered:</strong> {{ order.date_ordered|date:"M d, Y" }}</p>
+          {% if order.date_shipped %}
+            <p><strong>Shipped:</strong> {{ order.date_shipped|date:"M d, Y H:i" }}</p>
+          {% else %}
+            <p><strong>Status:</strong> Awaiting shipment</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="items-section">
+        <h3><i class="icon icon-shopping-bag"></i> Order Items</h3>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td><strong>{{ item.product }}</strong></td>
+              <td>{{ item.quantity }}</td>
+              <td>${{ item.price }}</td>
+              <td><strong>${{ item.total|floatformat:2 }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="order-actions">
+        {% if order.shipped %}
+          <a href="{% url 'shipped_dash' %}" class="btn-back">
+            <i class="icon icon-arrow-left"></i> Back to Shipped Orders
+          </a>
+          <form method="POST" style="flex: 1;">
+            {% csrf_token %}
+            <input type="hidden" name="shipping_status" value="false">
+            <button type="submit" class="action-btn unship" style="width: 100%;">
+              <i class="icon icon-return"></i> Mark as Unshipped
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'not_shipped_dash' %}" class="btn-back">
+            <i class="icon icon-arrow-left"></i> Back to Pending Orders
+          </a>
+          <form method="POST" style="flex: 1;">
+            {% csrf_token %}
+            <input type="hidden" name="shipping_status" value="true">
+            <button type="submit" class="action-btn ship" style="width: 100%;">
+              <i class="icon icon-check"></i> Mark as Shipped
+            </button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

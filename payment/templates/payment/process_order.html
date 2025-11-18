@@ -11,7 +11,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <h1 class="page-title">Billing & Payment</h1>
+        <h1 class="page-title">processing order </h1>
         <div class="breadcrumbs">
           <span class="item">
             <a href="{% url 'home' %}">Home</a> / 
@@ -29,146 +29,7 @@
   </div>
 </section>
 
-<!-- Billing Section -->
-<section class="checkout-section">
-  <div class="container checkout-container">
-    {% if cart_products %}
-    <div class="checkout-grid">
-      <!-- Billing Form -->
-      <div class="checkout-form-card">
-        <!-- Shipping Address Summary -->
-        <div class="shipping-summary">
-          <i class="icon icon-check-circle"></i>
-          <div class="summary-content">
-            <strong>✓ Shipping Information Confirmed</strong>
-         <div class="form-section-header">
-            <i class="icon icon-truck"></i>
-            <h3>Shipping Information</h3>
-          </div>
-
-          <!-- Full Name -->
-          <div class="form-full-width">
-            <label for="{{ shipping_form.shipping_full_name.id_for_label }}" class="field-label required">
-              Full Name
-            </label>
-            {{ shipping_form.shipping_full_name }}
-            {% if shipping_form.shipping_full_name.errors %}
-              <ul class="errorlist">
-                {% for error in shipping_form.shipping_full_name.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-
-          <!-- Email -->
-          <div class="form-full-width">
-            <label for="{{ shipping_form.shipping_email.id_for_label }}" class="field-label required">
-              Email
-            </label>
-            {{ shipping_form.shipping_email }}
-            {% if shipping_form.shipping_email.errors %}
-              <ul class="errorlist">
-                {% for error in shipping_form.shipping_email.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-
-          <!-- Address Line 1 -->
-          <div class="form-full-width">
-            <label for="{{ shipping_form.shipping_address1.id_for_label }}" class="field-label required">
-              Address Line 1
-            </label>
-            {{ shipping_form.shipping_address1 }}
-            {% if shipping_form.shipping_address1.errors %}
-              <ul class="errorlist">
-                {% for error in shipping_form.shipping_address1.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-
-          <!-- Address Line 2 -->
-          <div class="form-full-width">
-            <label for="{{ shipping_form.shipping_address2.id_for_label }}" class="field-label">
-              Address Line 2 (Optional)
-            </label>
-            {{ shipping_form.shipping_address2 }}
-            {% if shipping_form.shipping_address2.errors %}
-              <ul class="errorlist">
-                {% for error in shipping_form.shipping_address2.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-
-          <!-- City and State -->
-          <div class="form-grid">
-            <div>
-              <label for="{{ shipping_form.shipping_city.id_for_label }}" class="field-label required">
-                City
-              </label>
-              {{ shipping_form.shipping_city }}
-              {% if shipping_form.shipping_city.errors %}
-                <ul class="errorlist">
-                  {% for error in shipping_form.shipping_city.errors %}
-                    <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </div>
-            <div>
-              <label for="{{ shipping_form.shipping_state.id_for_label }}" class="field-label">
-                State / Province
-              </label>
-              {{ shipping_form.shipping_state }}
-              {% if shipping_form.shipping_state.errors %}
-                <ul class="errorlist">
-                  {% for error in shipping_form.shipping_state.errors %}
-                    <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </div>
-          </div>
-
-          <!-- Zip Code and Country -->
-          <div class="form-grid">
-            <div>
-              <label for="{{ shipping_form.shipping_zipcode.id_for_label }}" class="field-label required">
-                Zip Code
-              </label>
-              {{ shipping_form.shipping_zipcode }}
-              {% if shipping_form.shipping_zipcode.errors %}
-                <ul class="errorlist">
-                  {% for error in shipping_form.shipping_zipcode.errors %}
-                    <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </div>
-            <div>
-              <label for="{{ shipping_form.shipping_country.id_for_label }}" class="field-label required">
-                Country
-              </label>
-              {{ shipping_form.shipping_country }}
-              {% if shipping_form.shipping_country.errors %}
-                <ul class="errorlist">
-                  {% for error in shipping_form.shipping_country.errors %}
-                    <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </div>
-          </div>
-          </div>
-        </div>
-
-        <form method="POST" action ="{% url 'process_order' %}">
+<form method="POST" action ="{% url 'process_order' %}">
           {% csrf_token %}
 
           <!-- Hidden shipping form data -->
