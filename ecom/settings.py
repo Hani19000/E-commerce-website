@@ -96,10 +96,11 @@ DATABASES = {
         'NAME': 'railway',
         'USER': 'postgres',
         'PASSWORD': 'GzUTdWKsWXyltITdifaBUtBcsCBlhleu',
-        'HOST': 'postgres.railway.internal',  # ✅ Configuré via .env
-        'PORT': '5432',
+        'HOST': 'hopper.proxy.rlwy.net',  
+        'PORT': '47300',
     }
 }
+
 
 
 
