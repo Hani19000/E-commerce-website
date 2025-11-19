@@ -92,12 +92,12 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'hopper.proxy.rlwy.net',  
-        'PORT': '47300',
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
 
@@ -152,8 +152,8 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-RECAPTCHA_PUBLIC_KEY = '6LcEngosAAAAAKGEuKQnlNbn2ZQNsHultxJw7sD1'
-RECAPTCHA_PRIVATE_KEY = '6LcEngosAAAAAEWdS3q3YQEeLMAn1UbZXEym9lTs'
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')
 
 #Emailing settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
