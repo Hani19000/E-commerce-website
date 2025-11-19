@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'cart',
     'payment',
     'captcha',
-    'whitenoise.runserver_nostatic'
+    'whitenoise.runserver_nostatic',
 
 ]
 
