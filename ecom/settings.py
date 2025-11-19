@@ -47,13 +47,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',  # ✅ Déjà là
     'django.contrib.staticfiles',
+    'cloudinary',          # ⬅️ AJOUTEZ CETTE LIGNE
     'store',
     'cart',
     'payment',
     'captcha',
     'whitenoise.runserver_nostatic',
-
 ]
 
 MIDDLEWARE = [
@@ -147,6 +148,17 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET')
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 #white noise static stuf
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
