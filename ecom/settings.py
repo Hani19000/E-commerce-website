@@ -161,12 +161,14 @@ CLOUDINARY_STORAGE = {
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 #white noise static stuf
-# Static files
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # ⬅️ Important si vous avez un dossier static/ à la racine
 
-# WhiteNoise
+# Si vous avez un dossier static/ à la racine du projet
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# WhiteNoise configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
