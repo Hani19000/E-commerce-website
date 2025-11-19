@@ -37,7 +37,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://e-commerce-website-production-53d7.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://e-commerce-website-production-96ec.up.railway.app']
 
 # Application definition
 
