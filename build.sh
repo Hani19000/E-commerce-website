@@ -1,21 +1,26 @@
 #!/usr/bin/env bash
 set -o errexit
 
+echo "=== Installation des dépendances ==="
 pip install -r requirements.txt
+
+echo "=== Vérification de la structure ==="
+pwd
+ls -la
+echo "=== Contenu du dossier static ==="
+ls -la static/ 2>/dev/null || echo "Dossier static introuvable"
+
+echo "=== Création du dossier staticfiles ==="
+mkdir -p staticfiles
+
+echo "=== Collecte des fichiers statiques ==="
 python manage.py collectstatic --no-input --clear
 
-echo "=== Static files collected ==="
-ls -la staticfiles/ | head -20
+echo "=== Résultat de la collecte ==="
+ls -la staticfiles/ | head -20 || echo "Staticfiles vide"
+
 echo "=== CSS files ==="
-find staticfiles/css -type f 2>/dev/null || echo "No CSS files found!"
-```
+find staticfiles/css -type f 2>/dev/null | head -10 || echo "No CSS files"
 
-### 3. **Variables d'environnement Railway**
-
-Ajoutez ces variables dans Railway :
-```
-CLOUDINARY_CLOUD_NAME=da0ye1z2e
-CLOUDINARY_API_KEY=798987897232743
-CLOUDINARY_API_SECRET=R7g2huNISHZivEdizV
-DEBUG=False
-```
+echo "=== Total des fichiers statiques ==="
+find staticfiles -type f | wc -l
