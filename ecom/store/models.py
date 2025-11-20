@@ -95,7 +95,7 @@ class Product(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True)
     trademark = models.ForeignKey(Trademark, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.CharField(max_length=250, blank=True, null=True)
-    image = models.ImageField(upload_to='uploads/products/', blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/product/', blank=True, null=True)
     # add sale
     is_sale = models.BooleanField(default=False)
     sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=6)

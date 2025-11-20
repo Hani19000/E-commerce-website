@@ -48,6 +48,9 @@
       <!-- Email -->
       <div class="form-group">
         <label for="email">{{ form.email.label }} <span class="required">*</span></label>
+          <small class="info-message" style="color: #666; display: block; margin-bottom: 5px;">
+            📧 Only Gmail addresses are accepted
+          </small>
         {{ form.email }}
         {% if form.email.errors %}
           <span class="error-message">{{ form.email.errors.0 }}</span>
@@ -78,6 +81,18 @@
         {% endif %}
         {% if form.password2.errors %}
           <span class="error-message">{{ form.password2.errors.0 }}</span>
+        {% endif %}
+      </div>
+      
+      <!-- reCAPTCHA -->
+      <div class="form-group">
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+          <div class="error-message">
+            {% for error in form.captcha.errors %}
+              <small>{{ error }}</small>
+            {% endfor %}
+          </div>
         {% endif %}
       </div>
 

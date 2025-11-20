@@ -1,2 +1,3 @@
 web : gunicron store.wsgi --log-file
 web : python manage.py migrate && gunicorn  store.wsgi
+web: gunicorn ecom.wsgi:application --timeout 120 --workers 2

@@ -18,6 +18,10 @@ from .tokens import account_activation_token
 from django.db.models.query_utils import Q
 import json
 from cart.cart import Cart
+from django.conf import settings
+import requests
+import certifi
+
 # User = get_user_model()
 
 def search(request):
@@ -82,37 +86,165 @@ def update_password(request):
         return redirect('home')
     
 
+#####  avec sendgrid  #######
+def send_password_reset_email(request, user, to_email):
+    """
+    Envoie un email de réinitialisation de mot de passe via SendGrid
+    """
+    mail_subject = 'Password Reset Request - Your Store'
+    
+    # Génération du message HTML
+    message = render_to_string('reset_password.html', {
+        'user': user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    
+    try:
+        url = "https://api.sendgrid.com/v3/mail/send"
+        headers = {
+            "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "personalizations": [{
+                "to": [{"email": to_email}],
+                "subject": mail_subject
+            }],
+            "from": {
+                "email": settings.SENDGRID_FROM_EMAIL,
+                "name": "Your Store Security"
+            },
+            "reply_to": {
+                "email": settings.SENDGRID_FROM_EMAIL,
+                "name": "Your Store Support"
+            },
+            "content": [{
+                "type": "text/html",
+                "value": message
+            }],
+            "tracking_settings": {
+                "click_tracking": {"enable": True},
+                "open_tracking": {"enable": True}
+            },
+            "mail_settings": {
+                "bypass_list_management": {"enable": False},
+                "footer": {"enable": False},
+                "sandbox_mode": {"enable": False}
+            },
+            "categories": ["password_reset"]
+        }
+        
+        response = requests.post(
+            url, 
+            headers=headers, 
+            json=data, 
+            verify=certifi.where(), 
+            timeout=10
+        )
+        
+        if response.status_code == 202:
+            return True
+        else:
+            print(f"SendGrid error: {response.status_code} - {response.text}")
+            return False
+            
+    except requests.exceptions.Timeout:
+        print("Email timeout error")
+        return False
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
 
 def password_reset_request(request):
+    """
+    Vue pour gérer la demande de réinitialisation de mot de passe
+    """
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():
             user_email = form.cleaned_data['email']
             associated_user = get_user_model().objects.filter(Q(email=user_email)).first()
+            
             if associated_user:
-                subject = "Password Reset Request"
-                message = render_to_string("reset_password.html",{
-                    'user' : associated_user,
-                    'domain': get_current_site(request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                    'token': account_activation_token.make_token(associated_user),
-                    "Protocol" : 'https' if request.is_secure() else 'http'
-                })
-            email = EmailMessage(subject, message, to=[associated_user.email])
-            if email.send():
-                    messages.success(request,"your reset password has been sent, do the instruction send in your email")
+                # Envoyer l'email via SendGrid
+                email_sent = send_password_reset_email(request, associated_user, user_email)
+                
+                if email_sent:
+                    messages.success(
+                        request, 
+                        f"✅ Password reset instructions have been sent to {user_email}. "
+                        "Please check your inbox (and spam folder if needed)."
+                    )
+                else:
+                    messages.error(
+                        request, 
+                        "⚠️ Problem sending reset password email. Please try again later or contact support."
+                    )
             else:
-                    messages.error(request, "probleme sending reset password email, <b>SERVER PROBLEM</b>")
+                # Pour des raisons de sécurité, on affiche le même message même si l'email n'existe pas
+                # Cela évite qu'un attaquant puisse vérifier quels emails sont enregistrés
+                messages.success(
+                    request,
+                    f"If an account exists with {user_email}, you will receive password reset instructions."
+                )
+            
             return redirect('home')
-    
+        
+        # Gestion des erreurs du formulaire
         for key, error in list(form.errors.items()):
-                if key == 'captcha' and error[0] == 'This field is required.':
-                    messages.error(request, 'you must pass the recaptcha test !')
-                    continue
+            if key == 'captcha' and error[0] == 'This field is required.':
+                messages.error(request, '⚠️ You must pass the reCAPTCHA test!')
+                continue
+            messages.error(request, error)
+    
+    else:
+        form = PasswordResetForm()
+    
+    return render(
+        request=request, 
+        template_name="password_reset.html", 
+        context={"form": form}
+    )
 
 
-    form = PasswordResetForm()
-    return render(request=request, template_name="password_reset.html", context={"form": form})
+
+# def password_reset_request(request):
+#     if request.method == 'POST':
+#         form = PasswordResetForm(request.POST)
+#         if form.is_valid():
+#             user_email = form.cleaned_data['email']
+#             associated_user = get_user_model().objects.filter(Q(email=user_email)).first()
+#             if associated_user:
+#                 subject = "Password Reset Request"
+#                 message = render_to_string("reset_password.html",{
+#                     'user' : associated_user,
+#                     'domain': get_current_site(request).domain,
+#                     'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
+#                     'token': account_activation_token.make_token(associated_user),
+#                     "Protocol" : 'https' if request.is_secure() else 'http'
+#                 })
+#             email = EmailMessage(subject, message, to=[associated_user.email])
+#             if email.send():
+#                     messages.success(request,"your reset password has been sent, do the instruction send in your email")
+#             else:
+#                     messages.error(request, "probleme sending reset password email, <b>SERVER PROBLEM</b>")
+#             return redirect('home')
+    
+#         for key, error in list(form.errors.items()):
+#                 if key == 'captcha' and error[0] == 'This field is required.':
+#                     messages.error(request, 'you must pass the recaptcha test !')
+#                     continue
+
+
+#     form = PasswordResetForm()
+#     return render(request=request, template_name="password_reset.html", context={"form": form})
+
+
 
 def PasswordResetConfirm (request, uidb64, token):
     User = get_user_model()
@@ -238,6 +370,7 @@ def login_user(request):
     return render(request, template_name='login.html', context={'form': form})
 
 
+
 def logout_user(request):
     logout(request)
     messages.success(request, ('You have been logged out !'))
@@ -260,47 +393,209 @@ def activate(request, uidb64, token):
 
     return redirect ('home')
 
+import requests
+from django.conf import settings
+
 def activateEmail(request, user, to_email):
-    mail_subject = "Activate your user account"
-    message = render_to_string("activate_account.html",{
-        'user' : user,
+    import certifi
+    
+    # Titre professionnel et clair
+    mail_subject = 'Activate Your Account - Action Required'
+    
+    # Génération du message HTML
+    message = render_to_string('activate_account.html', {
+        'user': user.username,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
-        "Protocol" : 'https' if request.is_secure() else 'http'
-
+        'protocol': 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    if email.send():
-        messages.success(request, f'Dear <b>{user}</b>, please go to your email <b>{to_email}</b> inbox and click on received activation link to confirm and complete the registration. <b>Note:</b> check your spam folder.')
-    else :
-        messages.error(request, f'Probleme sending email to {to_email}, check if you typed it correctly.')
-
+    
+    try:
+        url = "https://api.sendgrid.com/v3/mail/send"
+        headers = {
+            "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "personalizations": [{
+                "to": [{"email": to_email}],
+                "subject": mail_subject
+            }],
+            "from": {
+                "email": settings.SENDGRID_FROM_EMAIL,
+                "name": "Your Store Team"  # Nom professionnel
+            },
+            "reply_to": {
+                "email": settings.SENDGRID_FROM_EMAIL,
+                "name": "Your Store Support"
+            },
+            "content": [{
+                "type": "text/html",
+                "value": message
+            }],
+            # IMPORTANT: Paramètres anti-spam
+            "tracking_settings": {
+                "click_tracking": {"enable": True},
+                "open_tracking": {"enable": True}
+            },
+            "mail_settings": {
+                "bypass_list_management": {"enable": False},
+                "footer": {"enable": False},
+                "sandbox_mode": {"enable": False}
+            },
+            # Catégorie pour le tracking
+            "categories": ["account_activation"]
+        }
+        
+        response = requests.post(url, headers=headers, json=data, verify=certifi.where(), timeout=10)
+        
+        if response.status_code == 202:
+            messages.success(request, f'✅ Activation email sent to {to_email}. Please check your inbox (and spam folder if needed).')
+        else:
+            print(f"SendGrid error: {response.status_code} - {response.text}")
+            messages.warning(request, 'Account created but email may be delayed. Please check your spam folder.')
+            
+    except requests.exceptions.Timeout:
+        print("Email timeout error")
+        messages.warning(request, "Email sending timed out. Please check your spam folder.")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        messages.warning(request, "Account created. If you don't receive an email, please check your spam folder.")
 
 def register_user(request):
-    form = SignUpForm()
-    if request.method == "POST":
+    if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            # username = form.cleaned_data['username']
-            # password = form.cleaned_data['password1']
-            user.is_active=False
+            user.is_active = False
             user.save()
-            activateEmail(request,user, form.cleaned_data.get('email'))
-            # messages.success(request, ('Username Created - Please fill out your info below..(not requied)!'))
+            
+            # Envoi email
+            activateEmail(request, user, form.cleaned_data.get('email'))
+            
             return redirect('home')
-
-            #log in user
-            # login(request, user)
-            # messages.success(request, ('Username Created - Please fill out your info below..(not requied)!'))
-            # return redirect('update_info')
-        else:
-            # messages.error(request, ('there was an error!'))
-            # return render(request, 'register.html', {'form': form})
-            for error in list(form.errors.values()):
-                messages.error(request, error)
     else:
         form = SignUpForm()
+    
+    return render(request, 'register.html', {'form': form})
 
-    return render (request=request, template_name= 'register.html', context={'form':form})
+
+
+
+
+## utiliser resend 
+#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
+# resend.api_key = settings.RESEND_API_KEY
+
+# def send_email_with_resend(subject, message, to_email):
+#     try:
+#         resend.Emails.send({
+#             "from": "hanider27@gmail.com",  # or your verified domain
+#             "to": to_email,
+#             "subject": subject,
+#             "html": message
+#         })
+#     except Exception as e:
+#         print(f"Error sending email: {e}")
+
+
+# def activateEmail(request, user, to_email):
+#     mail_subject = 'Activate your user account.'
+#     message = render_to_string('activate_account.html', {
+#         'user': user.username,
+#         'domain': get_current_site(request).domain,
+#         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#         'token': account_activation_token.make_token(user),
+#         'protocol': 'https' if request.is_secure() else 'http'
+#     })
+    
+#     try:
+#         resend.Emails.send({
+#             "from": "onboarding@resend.dev",
+#             "to": "hanider27@gmail.com",  # Email de test Resend
+#             "subject": mail_subject,
+#             "html": message
+#         })
+#         messages.success(request, f'Activation email sent! (Test mode: check Resend dashboard)')
+#     except Exception as e:
+#         print(f"Error sending email: {e}")
+#         messages.error(request, "Error sending activation email.")
+
+# def register_user(request):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             user.is_active = False
+#             user.save()
+            
+#             # Envoi email (non bloquant maintenant)
+#             activateEmail(request, user, form.cleaned_data.get('email'))
+            
+#             # Redirection immédiate
+#             return redirect('home')
+#     else:
+#         form = SignUpForm()
+    
+#     return render(request, 'register.html', {'form': form})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def activateEmail(request, user, to_email):
+#     mail_subject = "Activate your user account"
+#     message = render_to_string("activate_account.html",{
+#         'user' : user,
+#         'domain': get_current_site(request).domain,
+#         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#         'token': account_activation_token.make_token(user),
+#         "Protocol" : 'https' if request.is_secure() else 'http'
+
+#     })
+#     email = EmailMessage(mail_subject, message, to=[to_email])
+#     if email.send():
+#         messages.success(request, f'Dear <b>{user}</b>, please go to your email <b>{to_email}</b> inbox and click on received activation link to confirm and complete the registration. <b>Note:</b> check your spam folder.')
+#     else :
+#         messages.error(request, f'Probleme sending email to {to_email}, check if you typed it correctly.')
+
+
+# def register_user(request):
+#     form = SignUpForm()
+#     if request.method == "POST":
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#             # username = form.cleaned_data['username']
+#             # password = form.cleaned_data['password1']
+#             user.is_active=False
+#             user.save()
+#             activateEmail(request,user, form.cleaned_data.get('email'))
+#             # messages.success(request, ('Username Created - Please fill out your info below..(not requied)!'))
+#             return redirect('home')
+
+#             #log in user
+#             # login(request, user)
+#             # messages.success(request, ('Username Created - Please fill out your info below..(not requied)!'))
+#             # return redirect('update_info')
+#         else:
+#             # messages.error(request, ('there was an error!'))
+#             # return render(request, 'register.html', {'form': form})
+#             for error in list(form.errors.values()):
+#                 messages.error(request, error)
+#     else:
+#         form = SignUpForm()
+
+#     return render (request=request, template_name= 'register.html', context={'form':form})
