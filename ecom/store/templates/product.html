@@ -22,25 +22,29 @@
       <!-- Product Gallery -->
       <div class="col-lg-6 col-md-12">
         <div class="product-gallery">
-          <div class="main-image-container">
+          <div class="main-image-container zoom-box">
             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-product-image" id="mainImage">
             {% if product.is_sale %}
               <span class="product-badge sale">Sale</span>
             {% endif %}
           </div>
           
-          <div class="thumbnail-gallery">
-            <div class="thumbnail-item active">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            </div>
-            <!-- Ajoutez d'autres images si disponibles -->
-            <div class="thumbnail-item">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            </div>
-            <div class="thumbnail-item">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            </div>
-          </div>
+<div class="thumbnail-gallery">
+  
+  <!-- Thumbnail principale -->
+  <div class="thumbnail-item active">
+    <img src="{{ product.image.url }}" class="thumb" alt="">
+  </div>
+
+  <!-- Miniatures de la galerie -->
+  {% for img in product.images.all %}
+    <div class="thumbnail-item">
+      <img src="{{ img.image.url }}" class="thumb" alt="">
+    </div>
+  {% endfor %}
+
+</div>
+
         </div>
       </div>
 
@@ -259,7 +263,6 @@
       <h2 class="section-title">You May Also Like</h2>
     </div>
     <div class="row d-flex flex-wrap">
-      <!-- Ajoutez vos produits similaires ici -->
       <div class="product-item col-lg-3 col-md-6 col-sm-6">
         <div class="image-holder">
           <img src="{% static 'images/selling-products1.jpg' %}" alt="Product" class="product-image">
@@ -301,5 +304,34 @@ $(document).on('click', '#add-cart', function(e){
 
 })
 
+  const mainImage = document.getElementById("mainImage");
+  const thumbs = document.querySelectorAll(".thumb");
+
+  thumbs.forEach(thumb => {
+    thumb.addEventListener("click", () => {
+      mainImage.src = thumb.src;
+
+      document.querySelectorAll(".thumbnail-item").forEach(item => item.classList.remove("active"));
+      thumb.parentElement.classList.add("active");
+    });
+  });
+
+
+  const zoomBox = document.querySelector(".zoom-box");
+const zoomImage = document.getElementById("mainImage");
+
+zoomBox.addEventListener("mousemove", function (e) {
+    const rect = zoomBox.getBoundingClientRect();
+    const x = e.clientX - rect.left; 
+    const y = e.clientY - rect.top;
+
+    // Le zoom suit la souris
+    zoomImage.style.transformOrigin = `${x}px ${y}px`;
+    zoomImage.style.transform = "scale(2)";
+});
+
+zoomBox.addEventListener("mouseleave", function () {
+    zoomImage.style.transform = "scale(1)";
+});
 </script>
 {% endblock content %}

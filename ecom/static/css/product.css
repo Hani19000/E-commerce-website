@@ -103,6 +103,22 @@
     object-fit: cover;
   }
 
+.zoom-box {
+  position: relative;
+  overflow: hidden;
+  cursor: crosshair;
+  border-radius: 8px;
+}
+
+.zoom-box img {
+  width: 100%;
+  transition: transform 0.2s ease-out;
+  transform-origin: center center;
+}
+
+
+
+
   /* Product Info */
   .product-info-section {
     padding-left: 40px;

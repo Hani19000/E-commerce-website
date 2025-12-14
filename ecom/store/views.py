@@ -88,9 +88,6 @@ def update_password(request):
 
 #####  avec sendgrid  #######
 def send_password_reset_email(request, user, to_email):
-    """
-    Envoie un email de réinitialisation de mot de passe via SendGrid
-    """
     mail_subject = 'Password Reset Request - Your Store'
     
     # Génération du message HTML
@@ -161,9 +158,6 @@ def send_password_reset_email(request, user, to_email):
 
 
 def password_reset_request(request):
-    """
-    Vue pour gérer la demande de réinitialisation de mot de passe
-    """
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():

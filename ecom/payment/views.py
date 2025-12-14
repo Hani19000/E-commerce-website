@@ -5,10 +5,20 @@ from payment.models import ShippingAddress, Order, OrderItem
 from django.contrib import messages
 import datetime
 from store.models import Profile
-
+from django.views import View
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+from django.http import JsonResponse
+from store.models import Product
+
+# from django.urls import reverse
+# from paypal.standard.forms import PayPalPaymentsForm
+# from django.conf import settings
+# import uuid #unique user id for duplicate orders
 
 def my_orders(request):
     if request.user.is_authenticated:
@@ -262,34 +272,73 @@ def process_order(request):
     else:
         messages.error(request, "Acces denied")
         return redirect ('home')
-    
+
+
+
+
+
+##### views with sandbox ####""
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def billing_info(request):
-    if request.POST:
-        #get the cart
-        cart = Cart(request)
-        cart_products = cart.get_prods
-        quantities = cart.get_quants
-        totals = cart.cart_total()
-        # create a session with shipping info
-        my_shipping = request.POST
-        request.session['my_shipping'] = my_shipping
+    if request.method != 'POST':
+        messages.error(request, "Méthode non autorisée")
+        return redirect('checkout')
 
-        #check to see if user is logged in
-        if request.user.is_authenticated:
-            #get the billing form
-            billing_form = PaymentForm
-            return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities': quantities, 'totals': totals, 'shipping_form': request.POST, 'billing_form': billing_form})
-        else:
-            billing_form = PaymentForm
-            return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities': quantities, 'totals': totals, 'shipping_form': request.POST, 'billing_form': billing_form})
+    cart = Cart(request)
+    cart_products = cart.get_prods()
+    quantities = cart.get_quants()
+    total = cart.cart_total()
 
-        # shipping_form = request.POST
-        # return render(request, "payment/billing_info.html", {"cart_products": cart_products, 'quantities': quantities, 'totals': totals, 'shipping_form': shipping_form})
+    if not cart_products or total <= 0:
+        messages.error(request, "Votre panier est vide")
+        return redirect('cart_summary')
 
-    else:
-        messages.error(request, "Acces denied")
-        return redirect ('home')
+    my_shipping = request.session.get('my_shipping')
+    if not my_shipping:
+        messages.error(request, "Informations de livraison manquantes")
+        return redirect('checkout')
+
+    try:
+        line_items = []
+
+        for product in cart_products:
+            quantity = quantities.get(str(product.id), 1)
+            price = product.sale_price if product.is_sale else product.price
+
+            line_items.append({
+                'price_data': {
+                    'currency': 'eur',
+                    'unit_amount': int(price * 100),
+                    'product_data': {
+                        'name': product.name,
+                    },
+                },
+                'quantity': quantity,
+            })
+
+        domain = f"{request.scheme}://{request.get_host()}"
+
+        session = stripe.checkout.Session.create(
+            mode='payment',
+            line_items=line_items,
+            success_url=domain + '/payment/success/?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=domain + '/checkout/',
+            customer_email=my_shipping.get('shipping_email'),
+            automatic_payment_methods={'enabled': True},
+            metadata={
+                'user_id': request.user.id if request.user.is_authenticated else 'guest',
+            }
+        )
+
+        request.session['stripe_session_id'] = session.id
+        return redirect(session.url)
+
+    except Exception as e:
+        messages.error(request, "Erreur Stripe")
+        return redirect('checkout')
+
     
 
 
@@ -302,7 +351,7 @@ def checkout(request):
     if request.user.is_authenticated:
         #checkout as loged in user
         #shipping user
-        shipping_user, created = ShippingAddress.objects.get_or_create(user=request.user.id)
+        shipping_user, created = ShippingAddress.objects.get_or_create(user=request.user)
         #shipping form
         shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
         return render(request, "payment/checkout.html", {"cart_products": cart_products, 'quantities': quantities, 'totals': totals, 'shipping_form': shipping_form})
@@ -313,3 +362,6 @@ def checkout(request):
 
 def payment_success(request):
     return render(request, 'payment/payment_success.html',{})
+
+def payment_failed(request):
+    return render(request, 'payment/payment_failed.html',{})

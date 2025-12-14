@@ -182,7 +182,7 @@
             <h3>Payment Information</h3>
           </div>
 
-          <!-- Cardholder Name -->
+          {% comment %} <!-- Cardholder Name -->
           <div class="form-full-width">
             <label for="{{ billing_form.card_name.id_for_label }}" class="field-label required">
               Cardholder Name
@@ -265,7 +265,7 @@
                 {% endfor %}
               </ul>
             {% endif %}
-          </div>
+          </div> {% endcomment %}
 
           <!-- Billing Address Line 2 -->
           <div class="form-full-width">
@@ -417,6 +417,7 @@
             <span class="amount">${{ totals|floatformat:2 }}</span>
           </div>
         </div>
+            {{ paypal_form.render }}  <!-- PayPal Button  -->
       </div>
     </div>
     {% else %}

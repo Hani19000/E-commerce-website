@@ -23,11 +23,11 @@ DEBUG = config("DEBUG", cast=bool, default=False)
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "e-commerce-website-production-96ec.up.railway.app",
+    "e-commerce-website-production-96ec.up.railway.app" #, "tiffiny-tussive-kieth.ngrok-free.dev"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://e-commerce-website-production-96ec.up.railway.app",
+    "https://e-commerce-website-production-96ec.up.railway.app" #, "https://tiffiny-tussive-kieth.ngrok-free.dev"
 ]
 
 # ===============================
@@ -52,6 +52,9 @@ INSTALLED_APPS = [
 
     # For static optimization
     'whitenoise.runserver_nostatic',
+
+    # For paypal integration
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +75,7 @@ AUTH_USER_MODEL = "store.CustomUser"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,7 +140,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # WhiteNoise: production static optimization
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -158,3 +161,15 @@ SENDGRID_FROM_EMAIL = config("SENDGRID_FROM_EMAIL")
 # Default primary key
 # ===============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#add paypal settings
+#set sandbox to true
+# PAYPAL_TEST = True
+# #paypal business email
+# PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL")
+
+
+#stripe settings api
+STRIPE_PUBLIC_KEY = config("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
