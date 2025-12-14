@@ -1,0 +1,27 @@
+<!-- templates/payment/payment_success_email.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement accepté</title>
+</head>
+<body>
+    <h2>Bonjour {{ user.username }},</h2>
+    <p>Votre paiement a été accepté avec succès ✅</p>
+    <p>Vous pouvez consulter vos achats dans votre compte.</p>
+    <ul>
+{% for item in items %}
+<tr>
+    <td>{{ item.product.name }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>{{ item.price|floatformat:2 }} €</td>
+    <td>{{ item.total|floatformat:2 }} €</td>
+</tr>
+{% endfor %}
+<p>Total: {{ order.amount_paid|floatformat:2 }} €</p>
+
+    </ul>
+    <p>Merci pour votre confiance !</p>
+    <p><a href="{{ protocol }}://{{ domain }}/">Retour au site</a></p>
+</body>
+</html>

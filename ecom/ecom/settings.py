@@ -23,11 +23,11 @@ DEBUG = config("DEBUG", cast=bool, default=False)
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "e-commerce-website-production-96ec.up.railway.app" #, "tiffiny-tussive-kieth.ngrok-free.dev"
+    "e-commerce-website-production-96ec.up.railway.app" , "tiffiny-tussive-kieth.ngrok-free.dev"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://e-commerce-website-production-96ec.up.railway.app" #, "https://tiffiny-tussive-kieth.ngrok-free.dev"
+    "https://e-commerce-website-production-96ec.up.railway.app" , "https://tiffiny-tussive-kieth.ngrok-free.dev"
 ]
 
 # ===============================
@@ -173,3 +173,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #stripe settings api
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')

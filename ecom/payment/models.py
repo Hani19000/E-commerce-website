@@ -68,3 +68,16 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'Order Item-{str(self.id)}'
+    
+
+class PurchaseHistory(models.Model):
+        user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+        product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
+        quantity = models.PositiveBigIntegerField(default=1)
+        price = models.DecimalField(max_digits=7, decimal_places=2)
+        date_purchased = models.DateField(auto_now_add=True)
+        purchase_success = models.BooleanField(default=False)
+        stripe_session_id = models.CharField(max_length=255,unique=True, null=True, blank=True)
+
+        def __str__(self):
+            return f'Purchase History-{str(self.id)}'

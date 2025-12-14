@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import ShippingAddress, Order, OrderItem
+from .models import ShippingAddress, Order, OrderItem, PurchaseHistory
 from django.contrib.auth.models import User
 
 admin.site.register(ShippingAddress)
 admin.site.register(Order)
 admin.site.register(OrderItem)
-
+admin.site.register(PurchaseHistory)
 #create an orderitem inline
 class OrderItemInline(admin.StackedInline):
     model = OrderItem
