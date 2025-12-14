@@ -277,67 +277,111 @@ def process_order(request):
 
 
 
-##### views with sandbox ####""
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
 def billing_info(request):
-    if request.method != 'POST':
-        messages.error(request, "Méthode non autorisée")
+    """Affiche la page de billing avec le résumé de commande"""
+    if request.method == 'POST':
+        # Récupérer le panier
+        cart = Cart(request)
+        cart_products = cart.get_prods()
+        quantities = cart.get_quants()
+        totals = cart.cart_total()
+        
+        # Créer une session avec les infos de livraison
+        my_shipping = request.POST
+        request.session['my_shipping'] = my_shipping
+        
+        # Vérifier si l'utilisateur est connecté
+        if request.user.is_authenticated:
+            billing_form = PaymentForm()
+            return render(request, "payment/billing_info.html", {
+                "cart_products": cart_products, 
+                'quantities': quantities, 
+                'totals': totals, 
+                'shipping_form': request.POST, 
+                'billing_form': billing_form
+            })
+        else:
+            billing_form = PaymentForm()
+            return render(request, "payment/billing_info.html", {
+                "cart_products": cart_products, 
+                'quantities': quantities, 
+                'totals': totals, 
+                'shipping_form': request.POST, 
+                'billing_form': billing_form
+            })
+    else:
+        messages.error(request, "Accès refusé")
         return redirect('checkout')
 
+
+def create_stripe_checkout(request):
+    """Crée une session Stripe quand l'utilisateur clique sur 'Pay with Stripe'"""
+    if request.method != 'POST':
+        messages.error(request, "Méthode non autorisée")
+        return redirect('billing_info')
+    
+    # Récupérer le panier
     cart = Cart(request)
     cart_products = cart.get_prods()
     quantities = cart.get_quants()
     total = cart.cart_total()
-
+    
     if not cart_products or total <= 0:
         messages.error(request, "Votre panier est vide")
         return redirect('cart_summary')
-
+    
+    # Récupérer les infos de livraison depuis la session
     my_shipping = request.session.get('my_shipping')
     if not my_shipping:
-        messages.error(request, "Informations de livraison manquantes")
+        messages.error(request, "Veuillez d'abord renseigner vos informations de livraison")
         return redirect('checkout')
-
+    
     try:
+        # Créer les line items pour Stripe
         line_items = []
-
         for product in cart_products:
             quantity = quantities.get(str(product.id), 1)
             price = product.sale_price if product.is_sale else product.price
-
+            
             line_items.append({
                 'price_data': {
                     'currency': 'eur',
-                    'unit_amount': int(price * 100),
+                    'unit_amount': int(float(price) * 100),  # Convertir en centimes
                     'product_data': {
                         'name': product.name,
+                        'description': product.description[:100] if hasattr(product, 'description') and product.description else '',
                     },
                 },
                 'quantity': quantity,
             })
-
-        domain = f"{request.scheme}://{request.get_host()}"
-
-        session = stripe.checkout.Session.create(
-            mode='payment',
+        
+        # Créer la session Stripe
+        YOUR_DOMAIN = f"{request.scheme}://{request.get_host()}"
+        
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
             line_items=line_items,
-            success_url=domain + '/payment/success/?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=domain + '/checkout/',
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/payment_success/?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=YOUR_DOMAIN + '/billing_info',
             customer_email=my_shipping.get('shipping_email'),
-            automatic_payment_methods={'enabled': True},
             metadata={
                 'user_id': request.user.id if request.user.is_authenticated else 'guest',
+                'full_name': my_shipping.get('shipping_full_name'),
+                'email': my_shipping.get('shipping_email'),
             }
         )
-
-        request.session['stripe_session_id'] = session.id
-        return redirect(session.url)
-
+        
+        # Stocker l'ID de session pour validation ultérieure
+        request.session['stripe_session_id'] = checkout_session.id
+        request.session['stripe_shipping_info'] = my_shipping
+        
+        # Rediriger vers Stripe
+        return redirect(checkout_session.url)
+        
     except Exception as e:
-        messages.error(request, "Erreur Stripe")
-        return redirect('checkout')
+        messages.error(request, f"Erreur lors de la création du paiement Stripe: {str(e)}")
+        return redirect('billing_info')
 
     
 

@@ -403,21 +403,34 @@
           {% endfor %}
         </div>
 
-        <div class="summary-totals">
-          <div class="total-row subtotal">
-            <span>Subtotal</span>
-            <span>${{ totals|floatformat:2 }}</span>
-          </div>
-          <div class="total-row shipping">
-            <span>Shipping</span>
-            <span class="free-badge">FREE</span>
-          </div>
-          <div class="total-row grand-total">
-            <span>Total</span>
-            <span class="amount">${{ totals|floatformat:2 }}</span>
-          </div>
-        </div>
-            {{ paypal_form.render }}  <!-- PayPal Button  -->
+<!-- ✅ NOUVEAU BOUTON STRIPE -->
+<div class="summary-totals">
+  <div class="total-row subtotal">
+    <span>Subtotal</span>
+    <span>${{ totals|floatformat:2 }}</span>
+  </div>
+  <div class="total-row shipping">
+    <span>Shipping</span>
+    <span class="free-badge">FREE</span>
+  </div>
+  <div class="total-row grand-total">
+    <span>Total</span>
+    <span class="amount">${{ totals|floatformat:2 }}</span>
+  </div>
+</div>
+
+<!-- Bouton Stripe Payment -->
+<div class="stripe-payment-section" style="margin-top: 20px;">
+  <form method="POST" action="{% url 'create_stripe_checkout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-checkout" style="width: 100%; background: #635bff; border-color: #635bff;">
+      <i class="icon icon-credit-card"></i> Pay with Stripe
+    </button>
+  </form>
+  <p style="text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+    <i class="icon icon-lock"></i> Secure payment powered by Stripe
+  </p>
+</div>
       </div>
     </div>
     {% else %}
