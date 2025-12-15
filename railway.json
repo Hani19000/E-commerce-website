@@ -5,7 +5,7 @@
     "buildCommand": "pip install --upgrade pip && pip install -r requirements.txt && python ecom/manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "gunicorn ecom.ecom.wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 2",
+    "startCommand": "cd /app/ecom && gunicorn ecom.wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 2",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
