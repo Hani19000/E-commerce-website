@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # ===============================
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", cast=bool, default=False)
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
