@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 from decouple import config
 from dotenv import load_dotenv
-
+import dj_database_url
 # Load locally stored .env (useful for dev)
 load_dotenv()
 
@@ -104,14 +104,11 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 # Database (Railway PostgreSQL)
 # ===============================
 DATABASES = {
-    'default': {
-        'ENGINE': config("DB_ENGINE"),
-        'NAME': config("DB_NAME"),
-        'USER': config("DB_USER"),
-        'PASSWORD': config("DB_PASSWORD"),
-        'HOST': config("DB_HOST"),
-        'PORT': config("DB_PORT"),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # ===============================
