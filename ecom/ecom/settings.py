@@ -111,7 +111,7 @@ DATABASES = {
         'PASSWORD': config("DB_PASSWORD"),
         'HOST': config("DB_HOST"),
         'PORT': config("DB_PORT"),
-        'DATABASE_URL': dj_database_url.config(default=config("DATABASE_URL"))
+        'DATABASE_URL': config("DATABASE_URL"),
     }
 }
 
