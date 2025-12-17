@@ -91,31 +91,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecom.wsgi.application'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
-
 # ===============================
-# Database (Railway PostgreSQL)
+# Database Configuration
 # ===============================
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
+    # Production: Use Railway PostgreSQL
     DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
 else:
+    # Local development: Use SQLite
     DATABASES = {
-        "default": {
-            "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.postgresql"),
-            "NAME": os.environ.get("DB_NAME", "postgres"),
-            "USER": os.environ.get("DB_USER", "postgres"),
-            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-            "HOST": os.environ.get("DB_HOST", "localhost"),
-            "PORT": os.environ.get("DB_PORT", "5432"),
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
