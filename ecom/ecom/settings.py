@@ -96,10 +96,8 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 # ===============================
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if DATABASE_URL:
-    # Production: Use Railway PostgreSQL
-    DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
-else:
+# Force SQLite for local development (ignore DATABASE_URL from .env)
+if DEBUG:
     # Local development: Use SQLite
     DATABASES = {
         'default': {
@@ -107,7 +105,18 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
+else:
+    # Production: Use Railway PostgreSQL
+    if DATABASE_URL:
+        DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+    else:
+        # Fallback to SQLite in production if no DATABASE_URL (shouldn't happen)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 # ===============================
 # Password validation
 # ===============================
