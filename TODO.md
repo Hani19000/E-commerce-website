@@ -1,0 +1,2 @@
+- [x] Set DEBUG to False for production security in settings.py
+- [x] Add a database wait mechanism in railway.json before running migrations

@@ -5,7 +5,7 @@
     "buildCommand": "pip install --upgrade pip && pip install -r requirements.txt && python ecom/manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "cd /app/ecom && python manage.py migrate --noinput && gunicorn ecom.wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 2",
+    "startCommand": "cd /app/ecom && while ! python manage.py dbshell --command='SELECT 1;' >/dev/null 2>&1; do echo 'Waiting for database...'; sleep 5; done && python manage.py migrate --noinput && gunicorn ecom.wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 2",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
